@@ -35,8 +35,8 @@ void init_hw(void)
     io_conf_btn.pin_bit_mask = (1ULL << GPIO_BUTTON);
     
     // Habilitamos Pull-up interno (Crucial para leer botones conectados a GND)
-    io_conf_btn.pull_up_en = 1;
-    io_conf_btn.pull_down_en = 0;
+    io_conf_btn.pull_up_en = 0;
+    io_conf_btn.pull_down_en = 1;
     
     gpio_config(&io_conf_btn);
     
