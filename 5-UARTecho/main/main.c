@@ -60,6 +60,7 @@ void app_main(void)
     while (1) {
         // --- 1. ENVIAR (WRITE) ---
         // Escribimos bytes en el UART. 
+        //Similar a la funcion write de C
         int len_enviada = uart_write_bytes(PORT_UART, mensaje, strlen(mensaje));
         ESP_LOGI(TAG, "Enviado: %s (%d bytes)", mensaje, len_enviada);
 
