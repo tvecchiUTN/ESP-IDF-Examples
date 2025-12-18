@@ -18,6 +18,7 @@ void init_led_gpio(void)
 
     io_conf.intr_type = GPIO_INTR_DISABLE;      // No queremos interrupciones
     io_conf.mode = GPIO_MODE_OUTPUT;            // Modo salida
+    //Configuras dos pines seria (1ULL << PIN1) | (1ULL << PIN2) | etc
     io_conf.pin_bit_mask = (1ULL << LED_PIN);   // Bitmask: Seleccionamos el PIN 2
     io_conf.pull_down_en = 0;                   // Desactivar resistencia pull-down
     io_conf.pull_up_en = 0;                     // Desactivar resistencia pull-up
