@@ -45,6 +45,8 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 
 ## Desarrollo de temas
 
+---
+
 ### GPIO (General Purpose Input Output)
 
 Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker) y recibir una señal digital (pulsador)
@@ -75,7 +77,7 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 ---> **Parametros**
 
-- pGPIOConfig: Puntero a la estructura **gpio_config_t**.
+- pGPIOConfig: Puntero a la estructura **gpio_config_t** [in]
 
 ---> **Retorna**
 
@@ -86,9 +88,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 ---> **Parametros**
 
-- gpio_num: Numero de GPIO. Si es GPIO16 por ejemplo, el parametro debe ser GPIO_NUM_16 (16) o bien puede ser el numero.
+- gpio_num: Numero de GPIO. Si es GPIO16 por ejemplo, el parametro debe ser GPIO_NUM_16 (16) o bien puede ser el numero [in]
 
-- level: Nivel de salida. 0 para LOW; 1 para HIGH
+- level: Nivel de salida. 0 para LOW; 1 para HIGH [in]
 
 ---> **Retorna**
 
@@ -101,12 +103,14 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 ---> **Parametros**
 
-- gpio_num: Numero de GPIO. Si es GPIO16 por ejemplo, el parametro debe ser GPIO_NUM_16 (16) o bien puede ser el numero.
+- gpio_num: Numero de GPIO. Si es GPIO16 por ejemplo, el parametro debe ser GPIO_NUM_16 (16) o bien puede ser el numero [in]
 
 ---> **Retorna**
 
 - 0 si el nivel de la entrada es 0
 - 1 si el nivel de la entrada es 1
+
+---
 
 ### ADC (Analog Digital Converter)
 
@@ -148,8 +152,8 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ---> **Parametros**
 
-- init_config: Puntero a la estructura de configuracion inicial.
-- ret_unit: Puntero al Handler de la unidad.
+- init_config: Puntero a la estructura de configuracion inicial [in]
+- ret_unit: Puntero al Handler de la unidad [out]
 
 --> **Retorna**
 
@@ -165,9 +169,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ---> **Parametros**
 
-- handle: Handler de la unidad
-- channel: Canal ADC a configurar, su macro es `ADC_CHANNEL_0` y va desde 0 a 10
-- config: Puntero a la estructura de configuracion de canal
+- handle: Handler de la unidad [in]
+- channel: Canal ADC a configurar, su macro es `ADC_CHANNEL_0` y va desde 0 a 10 [in]
+- config: Puntero a la estructura de configuracion de canal [in]
 
 ---> **Retorna**
 
@@ -178,9 +182,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ---> **Parametros**
 
-- handle: Handler de la unidad.
-- chan: Canal ADC
-- out_raw: Puntero a la variable donde se guarda el valor leido
+- handle: Handler de la unidad [in]
+- chan: Canal ADC [in]
+- out_raw: Puntero a la variable donde se guarda el valor leido [out]
 
 ---> **Retorna**
 
@@ -192,7 +196,7 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ---> **Parametros**
 
-- handle: Handler de la unidad.
+- handle: Handler de la unidad [in]
 
 ---> **Retorna**
 
@@ -208,14 +212,86 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ---> **Parametros**
 
-- io_num: Numero de GPIO
-- unit_id: Unidad ADC
-- channel: Canal ADC
+- io_num: Numero de GPIO [in]
+- unit_id: Unidad ADC [out]
+- channel: Canal ADC [out]
 
 ---> **Retorna**
 
 - ESP_OK: si no hay errores
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 - ESP_ERR_NOT_FOUND: El pin no es un pad ADC valido
+
+---
+
+==Calibracion del ADC==
+
+#### Libreria: `#include "esp_adc/adc_cali.h"` y `#include "esp_adc/adc_cali_scheme.h"`
+
+#### Estructura para la configuracion de calibracion lineal: `adc_cali_line_fitting_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| unit_id | La unidad ADC en donde vienen los valores | adc_unit_t |
+| atten | Atenuacion que el ADC utiliza | adc_bitwidth_t |
+| bitwidth | Ancho de bits que el ADC utiliza | adc_bitwidth_t |
+| default_vref | Normalmente es 0, utilizado en caso de usar eFuse | adc_cali_line_fitting_efuse_val_t |
+
+#### Handle para la calibracion: `adc_cali_handle_t`
+
+#### Funcion para configuracion de calibracion lineal: `esp_err_t adc_cali_create_scheme_line_fitting(const adc_cali_line_fitting_config_t *config, adc_cali_handle_t *ret_handle)`
+
+---> **Parametros**
+
+- config: Puntero a la estructura de configuracion de calibracion lineal [in]
+- ret_handle: Puntero al handle de calibracion [out]
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_ERR_NO_MEM: Memoria insuficiente
+- ESP_ERR_NOT_SUPPORTED: Error con eFuse
+
+#### Funcion para convertir el valor ADC a milivoltios: `esp_err_t adc_cali_raw_to_voltage(adc_cali_handle_t handle, int raw, int *voltage)`
+
+---> **Parametros**
+
+- handle: Handle de calibracion [in]
+- raw: Dato crudo obtenido por la funcion `adc_oneshot_read` [in]
+- voltaje: Puntero a la variable donde se guarda el valor calibrado, en mV [out]
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_ERR_INVALID_STATE: Estado invalido, *scheme* no registrado
+
+#### Funcion para eliminar la unidad: `esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle)`
+
+---> **Parametros**
+
+- handle: Handle de calibracion [in]
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+---
+
+#### ADC Continuous Mode (Lectura por DMA)
+
+Nota para usuarios avanzados (DSP / Audio): Si tu proyecto requiere leer señales a alta velocidad (muestreo constante) para procesar audio, calcular FFT (Transformada Rápida de Fourier) o analizar vibraciones, NO uses el modo OneShot.
+
+¿Por qué?: El modo OneShot es bloqueante y lento para estas tareas.
+
+La Solución: Utiliza el Continuous Mode. Este modo utiliza el controlador DMA (Direct Memory Access) para llenar un buffer de datos automáticamente en segundo plano sin ocupar la CPU.
+
+#### Librería: `#include "esp_adc/adc_continuous.h"`
+
+Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patrón de canales. El hardware te avisa mediante una interrupción cuando el buffer está lleno y listo para procesar.
+
+---
 
 ### PWM (Pulse Widht Modulation)
