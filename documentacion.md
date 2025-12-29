@@ -14,7 +14,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 
 - [GPIO](#gpio-general-purpose-input-output)
 - [Analog Input o ADC (Analog Digital Converter)](#adc-analog-digital-converter)
-- PWM (Pulse Width Modulation)
+- [PWM (Pulse Width Modulation)](#pwm-pulse-widht-modulation)
 - DAC (Digital to Analog Converter)
 - Sensor Touch (Pines tactiles)
 - UART echo (Universal Asynchronous Receiver-Transmitter)
@@ -196,9 +196,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ---> **Retorna**
 
-    -> ESP_OK: si no hay errores
-    -> ESP_ERR_INVALID_ARG: Argumentos invalidos
-    -> ESP_ERR_NOT_FOUND: El periferico no se utiliza.
+- ESP_OK: si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_ERR_NOT_FOUND: El periferico no se utiliza.
 
 ---
 
@@ -217,3 +217,5 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_OK: si no hay errores
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 - ESP_ERR_NOT_FOUND: El pin no es un pad ADC valido
+
+### PWM (Pulse Widht Modulation)
