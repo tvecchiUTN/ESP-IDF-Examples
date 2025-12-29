@@ -307,16 +307,16 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 | timer_num | Origen del timer del canal | ledc_timer_t |
 | freq_hz | Frecuencia del timer LEDC en Hz | uint32_t |
 | clk_cfg | Origen del reloj | ledc_clk_cfg_t |
-| deconfigure | Desconfigura el LEDC, **analizar uso** | bool |
+| deconfigure | Desconfigura el LEDC | bool |
 
 ---> ==Caracteristicas==
 
-1) Velocidad del LEDC, puede ser high `LEDC_HIGH_SPEED_MODE`, low `LEDC_LOW_SPEED_MODE` o el limite `LEDC_SPEED_MODE_MAX`. 
-2) Resolucion del canal, va desde `LEDC_TIMER_1_BIT` hasta `LEDC_TIMER_20_BIT`.
+1) Velocidad del LEDC, puede ser high `LEDC_HIGH_SPEED_MODE`, low `LEDC_LOW_SPEED_MODE` o el limite `LEDC_SPEED_MODE_MAX`. Se recomienda low speed
+2) Resolucion del canal, va desde `LEDC_TIMER_1_BIT` hasta `LEDC_TIMER_20_BIT`. Para Dimming se utiliza 13 bits. Para servomotores de 10 a 14 bits. Para buzzers el valor es fijo, como 10 bits
 3) Timer, va desde `LEDC_TIMER_0` hasta `LEDC_TIMER_3`.
-4) Frecuecia recomendada:
+4) Frecuecia recomendada: de 4000 a 5000 para Dimming de LEDs. Servomotores, 50. Rara Buzzers puede variar.  
 5) Estructura con la configuracion del origen del reloj
-6) Utilizado en
+6) Vincula el temporizador configurado previamente con este canal específico
 
 #### Funcion para configuracion de timers: `esp_err_t ledc_timer_config(const ledc_timer_config_t *timer_conf)`
 
@@ -344,4 +344,4 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 | hpoint | valor del hpoint del LEDC | int |
 | sleep_mode | Actitud del LEDC en modo light-sleep | ledc_sleep_mode_t |
 | output_invert | Habilita o desabilita la salida GPIO invertida | unsigned int |
-| flags | Flags del LEDC | struct ledc_channel_config_t |
+| flags | Flags del LEDC | ledc_channel_config_t |
