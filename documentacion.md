@@ -295,3 +295,53 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 ---
 
 ### PWM (Pulse Widht Modulation)
+
+#### Libreria: `#include "driver/ledc.h"`
+
+#### Estructura para configuracion de timers: `ledc_timer_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
+| duty_resolution | Resolucion del canal | ledc_timer_bit_t |
+| timer_num | Origen del timer del canal | ledc_timer_t |
+| freq_hz | Frecuencia del timer LEDC en Hz | uint32_t |
+| clk_cfg | Origen del reloj | ledc_clk_cfg_t |
+| deconfigure | Desconfigura el LEDC, **analizar uso** | bool |
+
+---> ==Caracteristicas==
+
+1) Velocidad del LEDC, puede ser high `LEDC_HIGH_SPEED_MODE`, low `LEDC_LOW_SPEED_MODE` o el limite `LEDC_SPEED_MODE_MAX`. 
+2) Resolucion del canal, va desde `LEDC_TIMER_1_BIT` hasta `LEDC_TIMER_20_BIT`.
+3) Timer, va desde `LEDC_TIMER_0` hasta `LEDC_TIMER_3`.
+4) Frecuecia recomendada:
+5) Estructura con la configuracion del origen del reloj
+6) Utilizado en
+
+#### Funcion para configuracion de timers: `esp_err_t ledc_timer_config(const ledc_timer_config_t *timer_conf)`
+
+---> **Parametros**
+
+- timer_conf: Puntero a la estructura con la configuracion de timers [in]
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_FAIL: No se pudo encontrar un numero base a partir de la frecuencua y resolucion dada
+- ESP_ERR_INVALID_STATE: El timer no puede ser desconfigurado debido a que no fue configurado o no fue pausado
+
+#### Estructura para configuracion de canal: `ledc_channel_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| gpio_num | Numero de GPIO a utilizar | int |
+| speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
+| channel | Canal LEDC | ledc_channel_t |
+| intr_type | Configura la interrupcion, habilitado o desabilitado | ledc_intr_type_t |
+| timer_sel | Origen del timer del canal | ledc_timer_t |
+| duty | duty del canal | uint32_t |
+| hpoint | valor del hpoint del LEDC | int |
+| sleep_mode | Actitud del LEDC en modo light-sleep | ledc_sleep_mode_t |
+| output_invert | Habilita o desabilita la salida GPIO invertida | unsigned int |
+| flags | Flags del LEDC | struct ledc_channel_config_t |
