@@ -496,5 +496,37 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 - speed_mode: Velocidad antes configurada
 - channel: Canal al que se desea aplicar el cambio
 - target_duty: Cantidad de tiempo objetivo. Va desde 0 hasta (2**duty_resolution)
-- desired_fade_time_ms: Tiempo deseado de fading
+- desired_fade_time_ms: Tiempo deseado de fading en milisegundos
 
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_ERR_INVALID_STATE: Canal no inicializado
+- ESP_FAIL: Inicio de funcion fade dio error
+
+##### Funcion para inicar el modo fade
+
+`esp_err_t ledc_fade_start(ledc_mode_t speed_mode, ledc_channel_t channel, ledc_fade_mode_t fade_mode)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal al que se desea aplicar el cambio
+- fade_mode: Tiene dos opciones. `LEDC_FADE_NO_WAIT` para que la función retorne inmediatamente y el LED cambia de brillo en segundo plano. Esta es la mas recomendada. `LEDC_FADE_WAIT_DONE` para que la función congele tu tarea hasta que el LED termine de cambiar
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_STATE: Canal no inicializado o modo fade no instalado
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+> **Recomendaciones**: No llamar a `ledc_set_duty` mientras el fade esta en uso. Si se desea hacer un fade muy largo, reducir la frecuencia. Existe una estructura avanzada llamada ledc_fade_param_config_t, pero se usa solo para encadenar múltiples desvanecimientos complejos (curvas gamma).
+
+#### Aplicaciones
+
+*Efecto "Respiración (Breathing LED):* Indicadores de estado en dispositivos IoT (ej: "Conectando a WiFi..."). Se ve mucho más profesional que un parpadeo seco.
+
+*Arranque Suave de Motores (Soft-Start):* Si usas PWM para un motor DC, cambiar de 0% a 100% de golpe genera un pico de corriente enorme. Usar un fade de 500ms reduce el estrés eléctrico y mecánico.
+
+*Domótica (Iluminación):* Al encender/apagar luces de una habitación, una transición de 200-400ms es mucho más agradable a la vista que un encendido instantáneo.
