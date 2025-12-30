@@ -65,6 +65,8 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 | pull_down_en | Habilita la resistencia Pull-Down | gpio_pulldown_t |
 | intr_type | El tipo de interrupcion | gpio_int_type_t |
 
+> Aviso: Los pines 34, 35, 36 y 39 no tiene resistencia interna y solo son INPUT. Si intentas usarlos como OUTPUT o activar pull_up_en, no funcionará.
+
 [^1]: 1ULL significa un 1 en Unsigned Long Long, muy utilizado en aritmetica a nivel de bits.
 
 [^2]: Si se quiere añadir un pin mas, se utiliza el signo OR a nivel de bits (" | "), ejemplo: (1ULL << PinDeseado0) | (1ULL << PinDeseado1)
@@ -153,7 +155,7 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 ---> ==Caracteristicas==
 
-1) Diferentes parametros determinan el rango del adc. Los valores posibles son, 0, 2.5, 6 y 12. Un ejemplo es `ADC_ATTEN_DB_12`
+1) Diferentes parametros determinan el rango del adc. Los valores posibles son, 0, 2.5, 6 y 12. Para señales debiles se usa `ADC_ATTEN_DB_0` y para sensores entandar `ADC_ATTEN_DB_12`
 2) El ancho de bits del resultado de la conversión sin procesar. Un ejemplo es `ADC_BITWIDTH_DEFAULT`
 
 #### Handle para ADC en modo oneshot
