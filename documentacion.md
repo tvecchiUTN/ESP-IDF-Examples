@@ -398,3 +398,67 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 8) Normalmente se utiliza `LEDC_SLEEP_MODE_NO_ALIVE_NO_PD` que significa que no hay salida PWM
 9) La salida GPIO invertida significa que un led se enciende cuando se le aplica 0. Dependiendo el caso es 0 o 1
 10) Normalmente es 0
+
+#### Funcion para configuracion de canal LEDC
+
+`esp_err_t ledc_channel_config(const ledc_channel_config_t *ledc_conf)`
+
+---> **Parametros**
+
+- ledc_conf: Puntero a la estructura de configuracion de canal
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+#### Funcion para setear el estado de los LEDC
+
+`esp_err_t ledc_set_duty(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t duty)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal en donde se desea setear
+- duty: Cantidad de tiempo encedido. Va desde 0 hasta (2**duty_resolution)
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+#### Funcion para actualizar el estado de los LEDC
+
+`esp_err_t ledc_update_duty(ledc_mode_t speed_mode, ledc_channel_t channel)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal en donde se desea actualizar
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+---
+
+> Si se desea aplicar estas funciones en un ambiente multithreading o multitareas, se recomienda la siguiente funcion:
+`esp_err_t ledc_set_duty_and_update(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t duty, uint32_t hpoint)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal al que se desea aplicar el cambio
+- duty: Cantidad de tiempo encedido. Va desde 0 hasta (2**duty_resolution)
+- hpoint: Desfaze del LEDC. Va desde 0 hasta (2**duty_resolution) - 1
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_STATE: Canal no inicializado
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_FAIL: Inicio de funcion fade dio error
+
+---
+
