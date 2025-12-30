@@ -53,7 +53,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 #### Libreria: `#include "driver/gpio.h"`
 
-#### Estructura para configuracion: `gpio_config_t`
+#### Estructura para configuracion
+
+`gpio_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -62,6 +64,8 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 | pull_up_en | Habilita la resistencia Pull-Up | gpio_pullup_t |
 | pull_down_en | Habilita la resistencia Pull-Down | gpio_pulldown_t |
 | intr_type | El tipo de interrupcion | gpio_int_type_t |
+
+> Aviso: Los pines 34, 35, 36 y 39 no tiene resistencia interna y solo son INPUT. Si intentas usarlos como OUTPUT o activar pull_up_en, no funcionará.
 
 [^1]: 1ULL significa un 1 en Unsigned Long Long, muy utilizado en aritmetica a nivel de bits.
 
@@ -73,7 +77,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 2) Los valores que se le pueden dar a pullUp y pullDown pueden ser entre 0 o 1, no es necesario utilizar la macro.
 3) Para los actuadores, el tipo de interrupcion suele ser DISABLE, pero suele ser muy utilizado por pulsadores, o entradas, para que interrumpa una tarea cuando se activan. Su uso se ve en el siguiente [ejemplo](https://github.com/tvecchiUTN/ESP-IDF-Examples/blob/066bb0f6af8ad119528b7f6d8cbe68b96804833e/Iniciales/2.1-SigInpInter/main/main.c). Los valores de interrupt son demasiadas pero dependen pricipalmente de como quiero que se comporte la entrada; cuando la señal decae, es positiva, es negativa, etc.
 
-#### Funciones de configuracion: `esp_err_t gpio_config(const gpio_config_t *pGPIOConfig)`
+#### Funcion de configuracion
+
+`esp_err_t gpio_config(const gpio_config_t *pGPIOConfig)`
 
 ---> **Parametros**
 
@@ -84,7 +90,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 - ESP_OK si no hay errores.
 - ESP_ERR_INVALID_ARGS si hay errores de argumentos.
 
-#### Funcion de seteo de salida: `esp_err_t gpio_set_level(gpio_num_t gpio_num, uint32_t level)`
+#### Funcion de seteo de salida
+
+`esp_err_t gpio_set_level(gpio_num_t gpio_num, uint32_t level)`
 
 ---> **Parametros**
 
@@ -97,7 +105,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 - ESP_OK si no hay errores.
 - ESP_ERR_INVALID_ARGS si hay errores de argumentos.
 
-#### Funcion entrada de señal: `int gpio_get_level(gpio_num_t gpio_num)`
+#### Funcion entrada de señal
+
+`int gpio_get_level(gpio_num_t gpio_num)`
 
 > AVISO: Si no fue configurado como entrada, el valor de retorno siempre es 0
 
@@ -116,7 +126,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 #### Libreria: `#include "esp_adc/adc_oneshot.h"`
 
-#### Estructura para configuracion inicial: `adc_oneshot_unit_init_cfg_t`
+#### Estructura para configuracion inicial ADC
+
+`adc_oneshot_unit_init_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -132,7 +144,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 2) Selecciona el orien del reloj, comunmente se utiliza 0 para que utilize el default o por defecto
 3) Selecciona si el adc va a funcionar cuando este en modo ULP. Comunmente se utiliza `ADC_ULP_MODE_DISABLE`
 
-#### Estructura para configuracion de canal: `adc_oneshot_chan_cfg_t`
+#### Estructura para configuracion de canal
+
+`adc_oneshot_chan_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -141,14 +155,18 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 ---> ==Caracteristicas==
 
-1) Diferentes parametros determinan el rango del adc. Los valores posibles son, 0, 2.5, 6 y 12. Un ejemplo es `ADC_ATTEN_DB_12`
+1) Diferentes parametros determinan el rango del adc. Los valores posibles son, 0, 2.5, 6 y 12. Para señales debiles se usa `ADC_ATTEN_DB_0` y para sensores entandar `ADC_ATTEN_DB_12`
 2) El ancho de bits del resultado de la conversión sin procesar. Un ejemplo es `ADC_BITWIDTH_DEFAULT`
 
-#### Handle para ADC en modo oneshot: `adc_oneshot_unit_handle_t`
+#### Handle para ADC en modo oneshot
+
+`adc_oneshot_unit_handle_t`
 
 Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handlers.
 
-#### Funcion para configuracion inicial: `esp_err_t adc_oneshot_new_unit(const adc_oneshot_unit_init_cfg_t *init_config, adc_oneshot_unit_handle_t *ret_unit)`
+#### Funcion para configuracion inicial
+
+`esp_err_t adc_oneshot_new_unit(const adc_oneshot_unit_init_cfg_t *init_config, adc_oneshot_unit_handle_t *ret_unit)`
 
 ---> **Parametros**
 
@@ -163,7 +181,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_NOT_FOUND: Periferico ADC en uso
 - ESP_FAIL: El reloj no se inicializo correctamente
 
-#### Funcion para configuracion de canal: `esp_err_t adc_oneshot_config_channel(adc_oneshot_unit_handle_t handle, adc_channel_t channel, const adc_oneshot_chan_cfg_t *config)`
+#### Funcion para configuracion de canal
+
+`esp_err_t adc_oneshot_config_channel(adc_oneshot_unit_handle_t handle, adc_channel_t channel, const adc_oneshot_chan_cfg_t *config)`
 
 > AVISO: No utilizarla en un contexto ISR. La funcion es thread-safe.
 
@@ -178,7 +198,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_OK: si no hay errores
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 
-#### Funcion para leer el valor: `esp_err_t adc_oneshot_read(adc_oneshot_unit_handle_t handle, adc_channel_t chan, int *out_raw)`
+#### Funcion para leer el valor
+
+`esp_err_t adc_oneshot_read(adc_oneshot_unit_handle_t handle, adc_channel_t chan, int *out_raw)`
 
 ---> **Parametros**
 
@@ -192,7 +214,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 - ESP_ERR_TIMEOUT: Timeout, el resultado del adc es invalido
 
-#### Funcion para eliminar la unidad: `esp_err_t adc_oneshot_del_unit(adc_oneshot_unit_handle_t handle)`
+#### Funcion para eliminar la unidad ADC
+
+`esp_err_t adc_oneshot_del_unit(adc_oneshot_unit_handle_t handle)`
 
 ---> **Parametros**
 
@@ -208,7 +232,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ==Funcion complementaria==
 
-#### Funcion para saber el canal a partir del numero de GPIO: `esp_err_t adc_oneshot_io_to_channel(int io_num, adc_unit_t *const unit_id, adc_channel_t *const channel)`
+#### Funcion para saber el canal a partir del numero de GPIO
+
+`esp_err_t adc_oneshot_io_to_channel(int io_num, adc_unit_t *const unit_id, adc_channel_t *const channel)`
 
 ---> **Parametros**
 
@@ -228,7 +254,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 #### Libreria: `#include "esp_adc/adc_cali.h"` y `#include "esp_adc/adc_cali_scheme.h"`
 
-#### Estructura para la configuracion de calibracion lineal: `adc_cali_line_fitting_config_t`
+#### Estructura para la configuracion de calibracion lineal
+
+`adc_cali_line_fitting_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -239,7 +267,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 #### Handle para la calibracion: `adc_cali_handle_t`
 
-#### Funcion para configuracion de calibracion lineal: `esp_err_t adc_cali_create_scheme_line_fitting(const adc_cali_line_fitting_config_t *config, adc_cali_handle_t *ret_handle)`
+#### Funcion para configuracion de calibracion lineal
+
+`esp_err_t adc_cali_create_scheme_line_fitting(const adc_cali_line_fitting_config_t *config, adc_cali_handle_t *ret_handle)`
 
 ---> **Parametros**
 
@@ -253,7 +283,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_NO_MEM: Memoria insuficiente
 - ESP_ERR_NOT_SUPPORTED: Error con eFuse
 
-#### Funcion para convertir el valor ADC a milivoltios: `esp_err_t adc_cali_raw_to_voltage(adc_cali_handle_t handle, int raw, int *voltage)`
+#### Funcion para convertir el valor ADC a milivoltios
+
+`esp_err_t adc_cali_raw_to_voltage(adc_cali_handle_t handle, int raw, int *voltage)`
 
 ---> **Parametros**
 
@@ -267,7 +299,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 - ESP_ERR_INVALID_STATE: Estado invalido, *scheme* no registrado
 
-#### Funcion para eliminar la unidad: `esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle)`
+#### Funcion para eliminar la unidad calibracion ADC
+
+`esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle)`
 
 ---> **Parametros**
 
@@ -295,3 +329,204 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 ---
 
 ### PWM (Pulse Widht Modulation)
+
+#### Libreria: `#include "driver/ledc.h"`
+
+#### Estructura para configuracion de timers LEDC
+
+`ledc_timer_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
+| duty_resolution | Resolucion del canal | ledc_timer_bit_t |
+| timer_num | Origen del timer del canal | ledc_timer_t |
+| freq_hz | Frecuencia del timer LEDC en Hz | uint32_t |
+| clk_cfg | Origen del reloj | ledc_clk_cfg_t |
+| deconfigure | Desconfigura el LEDC | bool |
+
+---> ==Caracteristicas==
+
+1) Velocidad del LEDC, puede ser high `LEDC_HIGH_SPEED_MODE`, low `LEDC_LOW_SPEED_MODE` o el limite `LEDC_SPEED_MODE_MAX`. Se recomienda low speed
+2) Resolucion del canal, va desde `LEDC_TIMER_1_BIT` hasta `LEDC_TIMER_20_BIT`. Para Dimming se utiliza 13 bits. Para servomotores de 10 a 14 bits. Para buzzers el valor es fijo, como 10 bits
+3) Timer, va desde `LEDC_TIMER_0` hasta `LEDC_TIMER_3`.
+4) Frecuecia recomendada: de 4000 a 5000 para Dimming de LEDs. Servomotores, 50. Rara Buzzers puede variar.  
+5) Estructura con la configuracion del origen del reloj
+6) Vincula el temporizador configurado previamente con este canal específico
+
+#### Funcion para configuracion de timers LEDC
+
+`esp_err_t ledc_timer_config(const ledc_timer_config_t *timer_conf)`
+
+---> **Parametros**
+
+- timer_conf: Puntero a la estructura con la configuracion de timers [in]
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_FAIL: No se pudo encontrar un numero base a partir de la frecuencua y resolucion dada
+- ESP_ERR_INVALID_STATE: El timer no puede ser desconfigurado debido a que no fue configurado o no fue pausado
+
+#### Estructura para configuracion de canal LEDC
+
+`ledc_channel_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| gpio_num | Numero de GPIO a utilizar | int |
+| speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
+| channel | Canal LEDC | ledc_channel_t |
+| intr_type | Configura la interrupcion, habilitado o desabilitado | ledc_intr_type_t |
+| timer_sel | Origen del timer del canal | ledc_timer_t |
+| duty | duty del canal | uint32_t |
+| hpoint | valor del hpoint del LEDC | int |
+| sleep_mode | Actitud del LEDC en modo light-sleep | ledc_sleep_mode_t |
+| output_invert | Habilita o desabilita la salida GPIO invertida | unsigned int |
+| flags | Flags del LEDC | ledc_channel_config_t |
+
+---> ==Caracteristicas==
+
+1) Utilizar los pines GPIO con salida PWM, en un ESP32, la mayoria de sus pines tienen esta salida
+2) Misma velocidad ya seteada en la configuracion anterior
+3) Seleccionar canal, desde `LEDC_CHANNEL_0` hasta `LEDC_CHANNEL_7`, los pines seteados con el mismo canal actuan de la misma manera
+4) Lo mismo visto con entradas digitales, se pueden configurar interrupciones, depeden el caso pero por ahora usaremos `LEDC_INTR_DISABLE`
+5) Mismo timer ya seteado en la configuracion anterior
+6) Representa la cantidad de tiempo encedido. Va desde 0 hasta (2**duty_resolution)
+7) Define el desface de la señal PWM. Normalmente es 0 o hasta (2**duty_resolution)-1
+8) Normalmente se utiliza `LEDC_SLEEP_MODE_NO_ALIVE_NO_PD` que significa que no hay salida PWM
+9) La salida GPIO invertida significa que un led se enciende cuando se le aplica 0. Dependiendo el caso es 0 o 1
+10) Normalmente es 0
+
+#### Funcion para configuracion de canal LEDC
+
+`esp_err_t ledc_channel_config(const ledc_channel_config_t *ledc_conf)`
+
+---> **Parametros**
+
+- ledc_conf: Puntero a la estructura de configuracion de canal
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+#### Funcion para setear el estado de los LEDC
+
+`esp_err_t ledc_set_duty(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t duty)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal en donde se desea setear
+- duty: Cantidad de tiempo encedido. Va desde 0 hasta (2**duty_resolution)
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+#### Funcion para actualizar el estado de los LEDC
+
+`esp_err_t ledc_update_duty(ledc_mode_t speed_mode, ledc_channel_t channel)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal en donde se desea actualizar
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+---
+
+#### PWM en un ambiente multitareas
+
+Si se desea aplicar estas funciones en un ambiente multithreading o multitareas, se recomienda la siguiente funcion:
+`esp_err_t ledc_set_duty_and_update(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t duty, uint32_t hpoint)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal al que se desea aplicar el cambio
+- duty: Cantidad de tiempo encedido. Va desde 0 hasta (2**duty_resolution)
+- hpoint: Desfaze del LEDC. Va desde 0 hasta (2**duty_resolution) - 1
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_STATE: Canal no inicializado
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_FAIL: Inicio de funcion fade dio error
+
+---
+
+#### Funcionalidad: Hardware Fading (Desvanecimiento)
+
+Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en un tiempo determinado, gestionado automáticamente por el hardware.
+
+##### Funcion para instalar el modo fading
+
+`esp_err_t ledc_fade_func_install(int intr_alloc_flags)`
+
+---> **Parametros**
+
+- Flags: usa 0 por defecto
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Error de flag
+- ESP_ERR_NOT_FOUND: Fallo al intentar buscar fuente de interrupcion disponible
+- ESP_ERR_INVALID_STATE: Funcion fade ya instalada
+
+##### Funcion para desisntalar modo fade
+
+`void ledc_fade_func_uninstall(void)`
+
+##### Funcion para configurar el desvanecimiento
+
+`esp_err_t ledc_set_fade_with_time(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t target_duty, int desired_fade_time_ms)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal al que se desea aplicar el cambio
+- target_duty: Cantidad de tiempo objetivo. Va desde 0 hasta (2**duty_resolution)
+- desired_fade_time_ms: Tiempo deseado de fading en milisegundos
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+- ESP_ERR_INVALID_STATE: Canal no inicializado
+- ESP_FAIL: Inicio de funcion fade dio error
+
+##### Funcion para inicar el modo fade
+
+`esp_err_t ledc_fade_start(ledc_mode_t speed_mode, ledc_channel_t channel, ledc_fade_mode_t fade_mode)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal al que se desea aplicar el cambio
+- fade_mode: Tiene dos opciones. `LEDC_FADE_NO_WAIT` para que la función retorne inmediatamente y el LED cambia de brillo en segundo plano. Esta es la mas recomendada. `LEDC_FADE_WAIT_DONE` para que la función congele tu tarea hasta que el LED termine de cambiar
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_STATE: Canal no inicializado o modo fade no instalado
+- ESP_ERR_INVALID_ARG: Argumentos invalidos
+
+> **Recomendaciones**: No llamar a `ledc_set_duty` mientras el fade esta en uso. Si se desea hacer un fade muy largo, reducir la frecuencia. Existe una estructura avanzada llamada ledc_fade_param_config_t, pero se usa solo para encadenar múltiples desvanecimientos complejos (curvas gamma).
+
+#### Aplicaciones
+
+*Efecto "Respiración (Breathing LED):* Indicadores de estado en dispositivos IoT (ej: "Conectando a WiFi..."). Se ve mucho más profesional que un parpadeo seco.
+
+*Arranque Suave de Motores (Soft-Start):* Si usas PWM para un motor DC, cambiar de 0% a 100% de golpe genera un pico de corriente enorme. Usar un fade de 500ms reduce el estrés eléctrico y mecánico.
+
+*Domótica (Iluminación):* Al encender/apagar luces de una habitación, una transición de 200-400ms es mucho más agradable a la vista que un encendido instantáneo.
