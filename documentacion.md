@@ -383,3 +383,16 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 | sleep_mode | Actitud del LEDC en modo light-sleep | ledc_sleep_mode_t |
 | output_invert | Habilita o desabilita la salida GPIO invertida | unsigned int |
 | flags | Flags del LEDC | ledc_channel_config_t |
+
+---> ==Caracteristicas==
+
+1) Utilizar los pines GPIO con salida PWM, en un ESP32, la mayoria de sus pines tienen esta salida
+2) Misma velocidad ya seteada en la configuracion anterior
+3) Seleccionar canal, desde `LEDC_CHANNEL_0` hasta `LEDC_CHANNEL_7`, los pines seteados con el mismo canal actuan de la misma manera
+4) Lo mismo visto con entradas digitales, se pueden configurar interrupciones, depeden el caso pero por ahora usaremos `LEDC_INTR_DISABLE`
+5) Mismo timer ya seteado en la configuracion anterior
+6) Representa la cantidad de tiempo encedido. Va desde 0 hasta (2**duty_resolution)
+7) Define el desface de la señal PWM. Normalmente es 0 o hasta (2**duty_resolution)-1
+8) Normalmente se utiliza `LEDC_SLEEP_MODE_NO_ALIVE_NO_PD` que significa que no hay salida PWM
+9) La salida GPIO invertida significa que un led se enciende cuando se le aplica 0. Dependiendo el caso es 0 o 1
+10) Normalmente es 0
