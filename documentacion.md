@@ -53,7 +53,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 #### Libreria: `#include "driver/gpio.h"`
 
-#### Estructura para configuracion: `gpio_config_t`
+#### Estructura para configuracion
+
+`gpio_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -73,7 +75,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 2) Los valores que se le pueden dar a pullUp y pullDown pueden ser entre 0 o 1, no es necesario utilizar la macro.
 3) Para los actuadores, el tipo de interrupcion suele ser DISABLE, pero suele ser muy utilizado por pulsadores, o entradas, para que interrumpa una tarea cuando se activan. Su uso se ve en el siguiente [ejemplo](https://github.com/tvecchiUTN/ESP-IDF-Examples/blob/066bb0f6af8ad119528b7f6d8cbe68b96804833e/Iniciales/2.1-SigInpInter/main/main.c). Los valores de interrupt son demasiadas pero dependen pricipalmente de como quiero que se comporte la entrada; cuando la señal decae, es positiva, es negativa, etc.
 
-#### Funciones de configuracion: `esp_err_t gpio_config(const gpio_config_t *pGPIOConfig)`
+#### Funcion de configuracion
+
+`esp_err_t gpio_config(const gpio_config_t *pGPIOConfig)`
 
 ---> **Parametros**
 
@@ -84,7 +88,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 - ESP_OK si no hay errores.
 - ESP_ERR_INVALID_ARGS si hay errores de argumentos.
 
-#### Funcion de seteo de salida: `esp_err_t gpio_set_level(gpio_num_t gpio_num, uint32_t level)`
+#### Funcion de seteo de salida
+
+`esp_err_t gpio_set_level(gpio_num_t gpio_num, uint32_t level)`
 
 ---> **Parametros**
 
@@ -97,7 +103,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 - ESP_OK si no hay errores.
 - ESP_ERR_INVALID_ARGS si hay errores de argumentos.
 
-#### Funcion entrada de señal: `int gpio_get_level(gpio_num_t gpio_num)`
+#### Funcion entrada de señal
+
+`int gpio_get_level(gpio_num_t gpio_num)`
 
 > AVISO: Si no fue configurado como entrada, el valor de retorno siempre es 0
 
@@ -116,7 +124,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 #### Libreria: `#include "esp_adc/adc_oneshot.h"`
 
-#### Estructura para configuracion inicial: `adc_oneshot_unit_init_cfg_t`
+#### Estructura para configuracion inicial ADC
+
+`adc_oneshot_unit_init_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -132,7 +142,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 2) Selecciona el orien del reloj, comunmente se utiliza 0 para que utilize el default o por defecto
 3) Selecciona si el adc va a funcionar cuando este en modo ULP. Comunmente se utiliza `ADC_ULP_MODE_DISABLE`
 
-#### Estructura para configuracion de canal: `adc_oneshot_chan_cfg_t`
+#### Estructura para configuracion de canal
+
+`adc_oneshot_chan_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -144,11 +156,15 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 1) Diferentes parametros determinan el rango del adc. Los valores posibles son, 0, 2.5, 6 y 12. Un ejemplo es `ADC_ATTEN_DB_12`
 2) El ancho de bits del resultado de la conversión sin procesar. Un ejemplo es `ADC_BITWIDTH_DEFAULT`
 
-#### Handle para ADC en modo oneshot: `adc_oneshot_unit_handle_t`
+#### Handle para ADC en modo oneshot
+
+`adc_oneshot_unit_handle_t`
 
 Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handlers.
 
-#### Funcion para configuracion inicial: `esp_err_t adc_oneshot_new_unit(const adc_oneshot_unit_init_cfg_t *init_config, adc_oneshot_unit_handle_t *ret_unit)`
+#### Funcion para configuracion inicial
+
+`esp_err_t adc_oneshot_new_unit(const adc_oneshot_unit_init_cfg_t *init_config, adc_oneshot_unit_handle_t *ret_unit)`
 
 ---> **Parametros**
 
@@ -163,7 +179,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_NOT_FOUND: Periferico ADC en uso
 - ESP_FAIL: El reloj no se inicializo correctamente
 
-#### Funcion para configuracion de canal: `esp_err_t adc_oneshot_config_channel(adc_oneshot_unit_handle_t handle, adc_channel_t channel, const adc_oneshot_chan_cfg_t *config)`
+#### Funcion para configuracion de canal
+
+`esp_err_t adc_oneshot_config_channel(adc_oneshot_unit_handle_t handle, adc_channel_t channel, const adc_oneshot_chan_cfg_t *config)`
 
 > AVISO: No utilizarla en un contexto ISR. La funcion es thread-safe.
 
@@ -178,7 +196,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_OK: si no hay errores
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 
-#### Funcion para leer el valor: `esp_err_t adc_oneshot_read(adc_oneshot_unit_handle_t handle, adc_channel_t chan, int *out_raw)`
+#### Funcion para leer el valor
+
+`esp_err_t adc_oneshot_read(adc_oneshot_unit_handle_t handle, adc_channel_t chan, int *out_raw)`
 
 ---> **Parametros**
 
@@ -192,7 +212,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 - ESP_ERR_TIMEOUT: Timeout, el resultado del adc es invalido
 
-#### Funcion para eliminar la unidad: `esp_err_t adc_oneshot_del_unit(adc_oneshot_unit_handle_t handle)`
+#### Funcion para eliminar la unidad ADC
+
+`esp_err_t adc_oneshot_del_unit(adc_oneshot_unit_handle_t handle)`
 
 ---> **Parametros**
 
@@ -208,7 +230,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 ==Funcion complementaria==
 
-#### Funcion para saber el canal a partir del numero de GPIO: `esp_err_t adc_oneshot_io_to_channel(int io_num, adc_unit_t *const unit_id, adc_channel_t *const channel)`
+#### Funcion para saber el canal a partir del numero de GPIO
+
+`esp_err_t adc_oneshot_io_to_channel(int io_num, adc_unit_t *const unit_id, adc_channel_t *const channel)`
 
 ---> **Parametros**
 
@@ -228,7 +252,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 #### Libreria: `#include "esp_adc/adc_cali.h"` y `#include "esp_adc/adc_cali_scheme.h"`
 
-#### Estructura para la configuracion de calibracion lineal: `adc_cali_line_fitting_config_t`
+#### Estructura para la configuracion de calibracion lineal
+
+`adc_cali_line_fitting_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -239,7 +265,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 #### Handle para la calibracion: `adc_cali_handle_t`
 
-#### Funcion para configuracion de calibracion lineal: `esp_err_t adc_cali_create_scheme_line_fitting(const adc_cali_line_fitting_config_t *config, adc_cali_handle_t *ret_handle)`
+#### Funcion para configuracion de calibracion lineal
+
+`esp_err_t adc_cali_create_scheme_line_fitting(const adc_cali_line_fitting_config_t *config, adc_cali_handle_t *ret_handle)`
 
 ---> **Parametros**
 
@@ -253,7 +281,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_NO_MEM: Memoria insuficiente
 - ESP_ERR_NOT_SUPPORTED: Error con eFuse
 
-#### Funcion para convertir el valor ADC a milivoltios: `esp_err_t adc_cali_raw_to_voltage(adc_cali_handle_t handle, int raw, int *voltage)`
+#### Funcion para convertir el valor ADC a milivoltios
+
+`esp_err_t adc_cali_raw_to_voltage(adc_cali_handle_t handle, int raw, int *voltage)`
 
 ---> **Parametros**
 
@@ -267,7 +297,9 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 - ESP_ERR_INVALID_STATE: Estado invalido, *scheme* no registrado
 
-#### Funcion para eliminar la unidad: `esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle)`
+#### Funcion para eliminar la unidad calibracion ADC
+
+`esp_err_t adc_cali_delete_scheme_line_fitting(adc_cali_handle_t handle)`
 
 ---> **Parametros**
 
@@ -298,7 +330,9 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 
 #### Libreria: `#include "driver/ledc.h"`
 
-#### Estructura para configuracion de timers: `ledc_timer_config_t`
+#### Estructura para configuracion de timers LEDC
+
+`ledc_timer_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
@@ -318,7 +352,9 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 5) Estructura con la configuracion del origen del reloj
 6) Vincula el temporizador configurado previamente con este canal específico
 
-#### Funcion para configuracion de timers: `esp_err_t ledc_timer_config(const ledc_timer_config_t *timer_conf)`
+#### Funcion para configuracion de timers LEDC
+
+`esp_err_t ledc_timer_config(const ledc_timer_config_t *timer_conf)`
 
 ---> **Parametros**
 
@@ -331,7 +367,9 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 - ESP_FAIL: No se pudo encontrar un numero base a partir de la frecuencua y resolucion dada
 - ESP_ERR_INVALID_STATE: El timer no puede ser desconfigurado debido a que no fue configurado o no fue pausado
 
-#### Estructura para configuracion de canal: `ledc_channel_config_t`
+#### Estructura para configuracion de canal LEDC
+
+`ledc_channel_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
