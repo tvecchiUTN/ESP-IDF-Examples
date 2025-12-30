@@ -443,7 +443,9 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 
 ---
 
-> Si se desea aplicar estas funciones en un ambiente multithreading o multitareas, se recomienda la siguiente funcion:
+#### PWM en un ambiente multitareas
+
+Si se desea aplicar estas funciones en un ambiente multithreading o multitareas, se recomienda la siguiente funcion:
 `esp_err_t ledc_set_duty_and_update(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t duty, uint32_t hpoint)`
 
 ---> **Parametros**
@@ -461,4 +463,38 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 - ESP_FAIL: Inicio de funcion fade dio error
 
 ---
+
+#### Funcionalidad: Hardware Fading (Desvanecimiento)
+
+Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en un tiempo determinado, gestionado automáticamente por el hardware.
+
+##### Funcion para instalar el modo fading
+
+`esp_err_t ledc_fade_func_install(int intr_alloc_flags)`
+
+---> **Parametros**
+
+- Flags: usa 0 por defecto
+
+---> **Retorna**
+
+- ESP_OK: Si no hay errores
+- ESP_ERR_INVALID_ARG: Error de flag
+- ESP_ERR_NOT_FOUND: Fallo al intentar buscar fuente de interrupcion disponible
+- ESP_ERR_INVALID_STATE: Funcion fade ya instalada
+
+##### Funcion para desisntalar modo fade
+
+`void ledc_fade_func_uninstall(void)`
+
+##### Funcion para configurar el desvanecimiento
+
+`esp_err_t ledc_set_fade_with_time(ledc_mode_t speed_mode, ledc_channel_t channel, uint32_t target_duty, int desired_fade_time_ms)`
+
+---> **Parametros**
+
+- speed_mode: Velocidad antes configurada
+- channel: Canal al que se desea aplicar el cambio
+- target_duty: Cantidad de tiempo objetivo. Va desde 0 hasta (2**duty_resolution)
+- desired_fade_time_ms: Tiempo deseado de fading
 
