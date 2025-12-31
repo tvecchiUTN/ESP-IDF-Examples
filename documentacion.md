@@ -603,3 +603,8 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 
 El dispositivo DAC tambien se lo puede configurar para que tenga una salida *cosenoidal* y otra para que salga de manera *continua*
 
+En la libreria `#include "driver/dac_cosine.h"` se encuentra todo lo referido para que el DAC tenga forma cosenoidal. Aqui se puede configurar el reloj, frecuencia, offset, atenuacion, fase, etc.
+
+En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referido para que el DAC tenga salida continua. Un uso es para generar señales de audio o formas de onda de forma continua, a menudo usando el controlador I2S para DMA y un búfer cíclico para reproducir audio sin interrupciones, como tonos, música o patrones, ideal para aplicaciones de sonido, control de motores y generación de señales de prueba.
+
+---
