@@ -13,10 +13,10 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 ### Parte 1: Funciones basicas
 
 - [GPIO](#gpio-general-purpose-input-output)
-- [Analog Input o ADC (Analog Digital Converter)](#adc-analog-digital-converter)
+- [ADC (Analog Digital Converter)](#adc-analog-digital-converter)
 - [PWM (Pulse Width Modulation)](#pwm-pulse-widht-modulation)
 - [DAC (Digital to Analog Converter)](#dac-digital-to-analog-converter)
-- Sensor Touch (Pines tactiles)
+- [Sensor Touch (Pines tactiles)](#sensor-touch-pines-tactiles)
 - UART echo (Universal Asynchronous Receiver-Transmitter)
 - NVS Storage (Non-Volatile Storage)
 - Timers (GPTimer)
@@ -608,3 +608,7 @@ En la libreria `#include "driver/dac_cosine.h"` se encuentra todo lo referido pa
 En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referido para que el DAC tenga salida continua. Un uso es para generar señales de audio o formas de onda de forma continua, a menudo usando el controlador I2S para DMA y un búfer cíclico para reproducir audio sin interrupciones, como tonos, música o patrones, ideal para aplicaciones de sonido, control de motores y generación de señales de prueba.
 
 ---
+
+### Sensor touch (Pines tactiles)
+
+#### Libreria: `#include "driver/touch_sens.h"`
