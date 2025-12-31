@@ -15,7 +15,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [GPIO](#gpio-general-purpose-input-output)
 - [Analog Input o ADC (Analog Digital Converter)](#adc-analog-digital-converter)
 - [PWM (Pulse Width Modulation)](#pwm-pulse-widht-modulation)
-- DAC (Digital to Analog Converter)
+- [DAC (Digital to Analog Converter)](#dac-digital-to-analog-converter)
 - Sensor Touch (Pines tactiles)
 - UART echo (Universal Asynchronous Receiver-Transmitter)
 - NVS Storage (Non-Volatile Storage)
@@ -530,3 +530,76 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 *Arranque Suave de Motores (Soft-Start):* Si usas PWM para un motor DC, cambiar de 0% a 100% de golpe genera un pico de corriente enorme. Usar un fade de 500ms reduce el estrés eléctrico y mecánico.
 
 *Domótica (Iluminación):* Al encender/apagar luces de una habitación, una transición de 200-400ms es mucho más agradable a la vista que un encendido instantáneo.
+
+---
+
+### DAC (Digital to Analog Converter)
+
+#### Libreria: `#include "driver/dac_oneshot.h"`
+
+#### Estructura para configurar DAC en modo oneshot
+
+`dac_oneshot_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| chan_id | Canal DAC | dac_channel_t |
+
+---> ==Caracteristicas==
+
+1) El canal debe ser `DAC_CHAN_0` que es el GPIO25 o `DAC_CHAN_1` que es el GPIO26
+
+#### Handler para controlar el DAC en modo oneshot
+
+`dac_oneshot_handle_t`
+
+#### Funcion para configurar el DAC en modo oneshot
+
+`esp_err_t dac_oneshot_new_channel(const dac_oneshot_config_t *oneshot_cfg, dac_oneshot_handle_t *ret_handle)`
+
+---> **Parametros**
+
+- oneshot_cfg: Puntero a la estructura con la configuracion oneshot [in]
+- ret_handle: Puntero al handle para el DAC oneshot [out]
+
+---> **Retorna**
+
+- ESP_ERR_INVALID_ARG: El parametro de entrada es invalido
+- ESP_ERR_INVALID_STATE: El canal DAC ya fue registrado
+- ESP_ERR_NO_MEM: Memoria insuficiente
+- ESP_OK: Se pudo localizar el canal DAC. Salio todo bien.
+
+#### Funcion para eliminar el DAC
+
+`esp_err_t dac_oneshot_del_channel(dac_oneshot_handle_t handle)`
+
+---> **Parametros**
+
+- handle: handle del DAC oneshot [in]
+
+---> **Retorna**
+
+- ESP_ERR_INVALID_ARG: El parametro de entrada es invalido
+- ESP_ERR_INVALID_STATE: El canal ya fue eliminado
+- ESP_OK: Se pudo eliminar el canal. Salio todo bien.
+
+#### Funcion para escribir el voltaje
+
+`esp_err_t dac_oneshot_output_voltage(dac_oneshot_handle_t handle, uint8_t digi_value)`
+
+---> **Parametros**
+
+- handle: handle del DAC oneshot [in]
+- digi_value: Valor digital que sera convertido [in]
+
+---> **Retorna**
+
+- ESP_ERR_INVALID_ARG: El parametro de entrada es invalido
+- ESP_OK: La conversion digital fue exitosa
+
+---
+
+#### Librerias adicionales
+
+El dispositivo DAC tambien se lo puede configurar para que tenga una salida *cosenoidal* y otra para que salga de manera *continua*
+
