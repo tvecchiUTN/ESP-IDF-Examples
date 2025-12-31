@@ -590,7 +590,7 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 ---> **Parametros**
 
 - handle: handle del DAC oneshot [in]
-- digi_value: Valor digital que sera convertido [in]
+- digi_value: Valor digital que sera convertido. Los valores van desde 0 hasta 255 [in]
 
 ---> **Retorna**
 
