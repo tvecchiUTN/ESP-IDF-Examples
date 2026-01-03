@@ -633,7 +633,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 3) Debido a que con el ESP32 V1 el valor baja cuando se presiona, hay que utilizar: `TOUCH_INTR_TRIG_ON_BELOW_THRESH`
 4) Para uso estandar usar `TOUCH_INTR_TRIG_GROUP_NORMAL`
 5) El ESP32 original solo soporta una configuración de muestreo a la vez. Utilizar numero 1.
-6) Es el puntero a estructura `sample_cfg` que es la configuracion de muestra.
+6) Es el puntero a estructura `touch_sensor_sample_config_t` que es la configuracion de muestra. Al crear el array de tamaño `sample_cfg_num`, su unico valor es lo que devuelve la macro `TOUCH_SENSOR_V1_DEFAULT_SAMPLE_CONFIG()`, esto configura automáticamente voltajes de referencia y divisores de reloj estables.
 
 #### Handler para controlar el sensor touch
 
@@ -669,10 +669,19 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 - ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
 - ESP_ERR_INVALID_STATE: Controlador no desabilitado o algunos canales no fueron eliminados
 
-#### Estructura a la configuracion de canal del sensor touch 
+#### Estructura a la configuracion de canal del sensor touch
 
 `touch_channel_config_t`
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
 | abs_active_thresh | El umbral de activacion | uint32_t |
+| charge_speed | Velocidad de carga y descarga del pad touch | touch_charge_speed_t |
+| init_charge_volt | Voltaje inicial antes de cargar y descargar el pad tactil | touch_init_charge_volt_t |
+| group | El grupo en la que el canal pertenece. Es usado para disparar el interruptor | touch_chan_trig_group_t |
+
+---> ==Caracteristicas==
+
+1) Es recomendable entre 1000 y 3000 dependiendo del material que cubre el sensor.
+2) Se recomienda usar el default, `TOUCH_CHARGE_SPEED_DEFAULT`. Bajarle el valor reduce el ruido pero baja sensibilidad
+3) 
