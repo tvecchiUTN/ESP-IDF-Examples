@@ -13,10 +13,10 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 ### Parte 1: Funciones basicas
 
 - [GPIO](#gpio-general-purpose-input-output)
-- [Analog Input o ADC (Analog Digital Converter)](#adc-analog-digital-converter)
+- [ADC (Analog Digital Converter)](#adc-analog-digital-converter)
 - [PWM (Pulse Width Modulation)](#pwm-pulse-widht-modulation)
 - [DAC (Digital to Analog Converter)](#dac-digital-to-analog-converter)
-- Sensor Touch (Pines tactiles)
+- [Sensor Touch (Pines tactiles)](#sensor-touch-pines-tactiles)
 - UART echo (Universal Asynchronous Receiver-Transmitter)
 - NVS Storage (Non-Volatile Storage)
 - Timers (GPTimer)
@@ -608,3 +608,132 @@ En la libreria `#include "driver/dac_cosine.h"` se encuentra todo lo referido pa
 En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referido para que el DAC tenga salida continua. Un uso es para generar señales de audio o formas de onda de forma continua, a menudo usando el controlador I2S para DMA y un búfer cíclico para reproducir audio sin interrupciones, como tonos, música o patrones, ideal para aplicaciones de sonido, control de motores y generación de señales de prueba.
 
 ---
+
+### Sensor touch (Pines tactiles)
+
+#### Libreria: `#include "driver/touch_sens.h"`
+
+#### Estructura para configurar el sensor touch
+
+`touch_sensor_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| power_on_wait_us | El tiempo de espera entre el encendido de canal y la medicion | uint32_t |
+| meas_interval_us | Intervalo de medicion entre cada canal | uint32_t |
+| intr_trig_mode | Tipo de disparo del modo interrupcion | touch_intr_trig_mode_t |
+| intr_trig_group | Los grupos de canales que "disparan" | touch_intr_trig_group_t |
+| sample_cfg_num | El numero de configuracion de muestra | uint32_t |
+| sample_cfg | Array a la configuracion de muestra | touch_sensor_sample_config_t* |
+
+---> ==Caracteristicas==
+
+1) Valor recomendado: 0. El hardware gestiona bien el encendido. Aumentar solo si el sensor es inestable al arrancar.
+2) Valor recomendado: 10000 a 20000. Define que tan rapido reacciona. <10ms: Muy rapido, alto consumo. >50ms: Lento al tocar, bajo consumo
+3) Debido a que con el ESP32 V1 el valor baja cuando se presiona, hay que utilizar: `TOUCH_INTR_TRIG_ON_BELOW_THRESH`
+4) Para uso estandar usar `TOUCH_INTR_TRIG_GROUP_NORMAL`
+5) El ESP32 original solo soporta una configuración de muestreo a la vez. Utilizar numero 1.
+6) Es el puntero a estructura `touch_sensor_sample_config_t` que es la configuracion de muestra. Al crear el array de tamaño `sample_cfg_num`, su unico valor es lo que devuelve la macro `TOUCH_SENSOR_V1_DEFAULT_SAMPLE_CONFIG()`, esto configura automáticamente voltajes de referencia y divisores de reloj estables.
+
+#### Handler para controlar el sensor touch
+
+`touch_sensor_handle_t`
+
+#### Funcion para configurar el sensor touch
+
+`esp_err_t touch_sensor_new_controller(const touch_sensor_config_t *sens_cfg, touch_sensor_handle_t *ret_sens_handle)`
+
+---> **Parametros**
+
+- sens_cfg: Puntero a la estructura con la configuracion del sensor touch [in]
+- ret_sens_handle: Puntero al handle para configurar el sensor touch [out]
+
+---> **Retona**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_NO_MEM: Memoria insuficiente para el controlador
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+- ESP_ERR_INVALID_STATE: El controlador touch ya se uso
+
+#### Funcion para eliminar el controlador del sensor touch
+
+`esp_err_t touch_sensor_del_controller(touch_sensor_handle_t sens_handle)`
+
+---> **Parametros**
+
+- sens_handle: Handle del sensor touch
+
+---> **Retona**
+
+- ESP_OK: Si todo salio bien
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+- ESP_ERR_INVALID_STATE: Controlador no desabilitado o algunos canales no fueron eliminados
+
+#### Estructura a la configuracion de canal del sensor touch
+
+`touch_channel_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| abs_active_thresh | El umbral de activacion | uint32_t |
+| charge_speed | Velocidad de carga y descarga del pad touch | touch_charge_speed_t |
+| init_charge_volt | Voltaje inicial antes de cargar y descargar el pad tactil | touch_init_charge_volt_t |
+| group | El grupo en la que el canal pertenece. Es usado para disparar el interruptor | touch_chan_trig_group_t |
+
+---> ==Caracteristicas==
+
+1) Es recomendable entre 1000 y 3000 dependiendo del material que cubre el sensor.
+2) Se recomienda usar el default, `TOUCH_CHARGE_SPEED_DEFAULT`. Bajarle el valor reduce el ruido pero baja sensibilidad
+3) Se recomienda `TOUCH_INIT_CHARGE_VOLT_DEFAULT` que generalmente es 2,7. Un voltaje más alto otorga mayor rango dinámico (la señal tiene más "espacio" para moverse antes de saturarse), mejorando la sensibilidad y la resolución.
+4) Usar `TOUCH_CHAN_TRIG_GROUP_NORMAL`. Esto asegura que el canal participe en la lógica de interrupciones estándar.
+
+#### Handle para la configuracion de canal
+
+`touch_channel_handle_t`
+
+#### Funcion para registrar un nuevo sensor touch a partir del controlador
+
+`esp_err_t touch_sensor_new_channel(touch_sensor_handle_t sens_handle, int chan_id, const touch_channel_config_t *chan_cfg, touch_channel_handle_t *ret_chan_handle)`
+
+---> **Parametros**
+
+- sens_handle: Handle del controlador sensor touch. Es el handel antes utilizado[in]
+- chan_id: Canal touch, va desde el 0 hasta el 9 [in]
+- chan_cfg: Puntero onfiguracion del canal touch [in]
+- ret_chan_handle: Puntero al handle de la configuracion de canal [out]
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_NO_MEM: Memoria insuficiente para el canal del sensor touch
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+- ESP_ERR_INVALID_STATE: El controlador al sensor touch no esta habilitado o canal ya usado
+
+#### Funcion para habilitar el sensor touch
+
+`esp_err_t touch_sensor_enable(touch_sensor_handle_t sens_handle)`
+
+---> **Parametros**
+
+- sens_handle: Handle del controlador del sensor touch [in]
+
+---> **Retorna**
+
+- ESP_OK_ Si salio todo bien
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+- ESP_ERR_INVALID_STATE: El controlador del sensor touch ya fue habiliado
+
+#### Funcion para leer el valor del pin
+
+`esp_err_t touch_channel_read_data(touch_channel_handle_t chan_handle, touch_chan_data_type_t type, uint32_t *data)`
+
+---> **Parametros**
+
+- chan_handle: Handle de canal touch [in]
+- type: Especifica el tipo de dato a leer. Se utiliza `TOUCH_CHAN_DATA_TYPE_RAW` para leer el valor crudo [in]
+- data: Puntero al array de datos [out]
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL

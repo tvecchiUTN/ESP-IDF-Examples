@@ -11,3 +11,13 @@ Pregúntame sobre qué estructura de configuración (_config_t) crees que debo d
 Guíame paso a paso.
 
 Empecemos: ¿Por dónde arranco para configurar el [...]?
+
+---
+
+¿Cómo empezar a usarlo?
+
+Una vez que hayas creado el Gem con estas instrucciones, puedes lanzarle tu primer reto. Por ejemplo:
+
+
+
+"Quiero configurar un botón físico que use interrupciones para cambiar el estado de un LED. ¿Qué librerías necesito y cuál es el primer paso para configurar el GPIO?"
