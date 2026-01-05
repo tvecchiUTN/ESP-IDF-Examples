@@ -684,4 +684,56 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 
 1) Es recomendable entre 1000 y 3000 dependiendo del material que cubre el sensor.
 2) Se recomienda usar el default, `TOUCH_CHARGE_SPEED_DEFAULT`. Bajarle el valor reduce el ruido pero baja sensibilidad
-3) 
+3) Se recomienda `TOUCH_INIT_CHARGE_VOLT_DEFAULT` que generalmente es 2,7. Un voltaje más alto otorga mayor rango dinámico (la señal tiene más "espacio" para moverse antes de saturarse), mejorando la sensibilidad y la resolución.
+4) Usar `TOUCH_CHAN_TRIG_GROUP_NORMAL`. Esto asegura que el canal participe en la lógica de interrupciones estándar.
+
+#### Handle para la configuracion de canal
+
+`touch_channel_handle_t`
+
+#### Funcion para registrar un nuevo sensor touch a partir del controlador
+
+`esp_err_t touch_sensor_new_channel(touch_sensor_handle_t sens_handle, int chan_id, const touch_channel_config_t *chan_cfg, touch_channel_handle_t *ret_chan_handle)`
+
+---> **Parametros**
+
+- sens_handle: Handle del controlador sensor touch. Es el handel antes utilizado[in]
+- chan_id: Canal touch, va desde el 0 hasta el 9 [in]
+- chan_cfg: Puntero onfiguracion del canal touch [in]
+- ret_chan_handle: Puntero al handle de la configuracion de canal [out]
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_NO_MEM: Memoria insuficiente para el canal del sensor touch
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+- ESP_ERR_INVALID_STATE: El controlador al sensor touch no esta habilitado o canal ya usado
+
+#### Funcion para habilitar el sensor touch
+
+`esp_err_t touch_sensor_enable(touch_sensor_handle_t sens_handle)`
+
+---> **Parametros**
+
+- sens_handle: Handle del controlador del sensor touch [in]
+
+---> **Retorna**
+
+- ESP_OK_ Si salio todo bien
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+- ESP_ERR_INVALID_STATE: El controlador del sensor touch ya fue habiliado
+
+#### Funcion para leer el valor del pin
+
+`esp_err_t touch_channel_read_data(touch_channel_handle_t chan_handle, touch_chan_data_type_t type, uint32_t *data)`
+
+---> **Parametros**
+
+- chan_handle: Handle de canal touch [in]
+- type: Especifica el tipo de dato a leer. Se utiliza `TOUCH_CHAN_DATA_TYPE_RAW` para leer el valor crudo [in]
+- data: Puntero al array de datos [out]
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
