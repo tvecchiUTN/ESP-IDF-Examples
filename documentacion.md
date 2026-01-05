@@ -18,7 +18,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [DAC (Digital to Analog Converter)](#dac-digital-to-analog-converter)
 - [Sensor Touch (Pines tactiles)](#sensor-touch-pines-tactiles)
 - [UART echo (Universal Asynchronous Receiver-Transmitter)](#uart-universal-asynchronous-receiver-transmitter)
-- NVS Storage (Non-Volatile Storage)
+- [NVS (Non-Volatile Storage)](#nvs-non-volatile-storage)
 - Timers (GPTimer)
 - Power Modes
 
@@ -856,3 +856,124 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 > Estas dos funciones son las pricipales, despues hay algunas que son complementarias que sirves para ciertas situaciones, como por ejemplo: para limpiar el Buffer de entrada `uart_flush_input()`, consultar datos disponibles `uart_get_buffered_data_len()` y para esperar que se termine el envio `uart_wait_tx_done`
 
 ---
+
+### NVS (Non Volatile Storage)
+
+#### Libreria: `#include "nvs_flash.h"` y `#include "nvs.h"`
+
+#### Funcion para inicializar el NVS
+
+`esp_err_t nvs_flash_init(void)`
+
+---> **Retorna**
+
+- ESP_OK: Si el almacenamiento fue inicializado correctamente
+- ESP_ERR_NVS_NO_FREE_PAGES: Si el almacentamiento NVS no contiene paginas vacias (Puede suceder si la particion nvs fue truncada)
+- ESP_ERR_NOT_FOUND: Si no hay particion con la etiqueta "nvs" es encontrada en la tabla de particiones
+- ESP_ERR_NO_MEM: En caso de que la memoria no fue localizada en las estructuras internas
+- Uno de los codigos de error del "subyacente" driver de almacenamiento
+- Codigos de error de `nvs_flash_read_security_cfg` API (cuando "NVS_ENCRYPTION" este habilitado).
+- Codigos de error de `nvs_flash_generate_keys` API (cuando "NVS_ENCRYPTION" este habilitado).
+- Codigos de error de `nvs_flash_secure_init_partition` API (cuando "NVS_ENCRYPTION" este habilitado)
+
+> AVISO: En caso de que el error sea `NO_FREE_PAGES` O `NEW_VERSION_FOUND` se debe llamar a la funcion `nvs_flash_erase()` para que borre la particion NVS
+
+#### Handle para manejar los NVS
+
+`nvs_handle_t`
+
+#### Funcion para la apertura del nvs
+
+`esp_err_t nvs_open(const char *namespace_name, nvs_open_mode_t open_mode, nvs_handle_t *out_handle)`
+
+---> **Parametros**
+
+- namespace_name: Puntero al nombre del espacio de trabajo. La maxima cantidad de caracteres es de 16
+- open_mode: Modo de apertura. Puede ser `NVS_READONLY` para unicamente leer o `NVS_READWRITE` para leer y escribir
+- out_handle: Puntero al handle manejador de NVS
+
+---> **Retorna**
+
+- ESP_OK: si el controlador de almacenamiento se abrió correctamente
+- ESP_FAIL: si hay un error interno; Probablemente debido a una partición NVS dañada (solo si las comprobaciones de aserción NVS están deshabilitadas).
+- ESP_ERR_NVS_NOT_INITIALIZED: si el controlador de almacenamiento no está inicializado.
+- ESP_ERR_NVS_PART_NOT_FOUND: si no se encuentra la partición con la etiqueta "nvs".
+- ESP_ERR_NVS_NOT_FOUND: si el espacio de nombres aún no existe y el modo es NVS_READONLY.
+- ESP_ERR_NVS_INVALID_NAME: si el nombre del espacio de nombres no cumple las restricciones.
+- ESP_ERR_NO_MEM: si no se pudo asignar memoria para las estructuras internas.
+- ESP_ERR_NVS_NOT_ENOUGH_SPACE: si no hay espacio para una nueva entrada o hay demasiados espacios de nombres diferentes (máximo permitido de espacios de nombres diferentes: 254).
+- ESP_ERR_NOT_ALLOWED: si la partición NVS es de solo lectura y el modo es NVS_READWRITE
+- ESP_ERR_INVALID_ARG: si el identificador de salida es NULL
+- Otros códigos de error del controlador de almacenamiento subyacente
+
+#### Funcion para cerrar el modo nvs
+
+`void nvs_close(nvs_handle_t handle)`
+
+---> **Parametros**
+
+- handle: Handle del NVS
+
+---
+
+#### Funcion para setear el dato
+
+`esp_err_t nvs_set_xn(nvs_handle_t handle, const char *key, xintn_t value)`
+
+> x: Usar "u" si el dato es unsigned. Usar "i" si es con signo.
+n: Tipo de dato, ya sea 8, 16, 32 o 64
+Otros tipos: str para string. blob para una estructura. Para ambos casos hay que especificar el tamaño
+
+---> **Parametros**
+
+- handle: Handle del NVS
+- key: Puntero al nombre o key a setear
+- value: Valor a seter
+- lenght: En caso de que la funcion sea str o blob. Tamaño del dato en bytes
+
+---> **Retorna**
+
+- ESP_OK si el valor se configuró correctamente
+- ESP_FAIL si hay un error interno; probablemente debido a una partición NVS dañada (solo si las comprobaciones de aserción NVS están deshabilitadas)
+- ESP_ERR_NVS_INVALID_HANDLE si el controlador se ha cerrado o es nulo
+- ESP_ERR_NVS_READ_ONLY si el controlador de almacenamiento se abrió como de solo lectura
+- ESP_ERR_NVS_INVALID_NAME si el nombre de la clave no cumple las restricciones
+- ESP_ERR_NVS_NOT_ENOUGH_SPACE si no hay suficiente espacio en el almacenamiento subyacente para guardar el valor
+- ESP_ERR_NVS_REMOVE_FAILED si el valor no se actualizó debido a un error en la escritura en la memoria flash. Sin embargo, el valor se escribió y la actualización finalizará tras la reinicialización de NVS, siempre que la operación de escritura no vuelva a fallar.
+- ESP_ERR_NVS_VALUE_TOO_LONG si el valor es demasiado largo
+
+#### Funcion para escribir los cambios
+
+`esp_err_t nvs_commit(nvs_handle_t handle)`
+
+---> **Parametros**
+
+- handle: Handle del NVS
+
+---> **Retorna**
+
+- ESP_OK: Si los cambios fueron escritor correctamente
+- ESP_ERR_NVS_INVALID_HANDLE: Si el handle fue eliminado o es NULL
+- Otros errores del driver de almacenamiento
+
+#### Funcion para obtener un dato
+
+`esp_err_t nvs_get_xn(nvs_handle_t handle, const char *key, xintn_t *out_value)`
+
+> x: Usar "u" si el dato es unsigned. Usar "i" si es con signo.
+n: Tipo de dato, ya sea 8, 16, 32 o 64
+Otros tipos: str para string. blob para una estructura. Para ambos casos hay que especificar el tamaño
+
+- handle: Handle del NVS
+- key: Puntero al nombre o key a buscar
+- out_value: Puntero al valor de salida
+- lenght: En caso de que la funcion sea str o blob. Puntero del tamaño del dato en bytes
+
+---> **Retorna**
+
+- ESP_OK si el valor se recuperó correctamente
+- ESP_FAIL si hay un error interno; probablemente debido a una partición NVS dañada (solo si las comprobaciones de aserción NVS están deshabilitadas)
+- ESP_ERR_NVS_NOT_FOUND si la clave solicitada no existe
+- ESP_ERR_NVS_INVALID_HANDLE si el identificador se ha cerrado o es nulo
+- ESP_ERR_NVS_INVALID_NAME si el nombre de la clave no cumple las restricciones
+- ESP_ERR_NVS_INVALID_LENGTH si la longitud no es suficiente para almacenar los datos
