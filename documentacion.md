@@ -17,7 +17,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [PWM (Pulse Width Modulation)](#pwm-pulse-widht-modulation)
 - [DAC (Digital to Analog Converter)](#dac-digital-to-analog-converter)
 - [Sensor Touch (Pines tactiles)](#sensor-touch-pines-tactiles)
-- UART echo (Universal Asynchronous Receiver-Transmitter)
+- [UART echo (Universal Asynchronous Receiver-Transmitter)](#uart-universal-asynchronous-receiver-transmitter)
 - NVS Storage (Non-Volatile Storage)
 - Timers (GPTimer)
 - Power Modes
@@ -737,3 +737,122 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 
 - ESP_OK: Si salio todo bien
 - ESP_ERR_INVALID_ARG: Argumentos invalidos o puntero a NULL
+
+---
+
+### UART (Universal Asynchronous Receiver-Transmitter)
+
+#### Libreria: `#include "driver/uart.h"`
+
+#### Funcion para instalar el driver UART
+
+`esp_err_t uart_driver_install(uart_port_t uart_num, int rx_buffer_size, int tx_buffer_size, int queue_size, QueueHandle_t *uart_queue, int intr_alloc_flags)`
+
+---> **Parametros**
+
+- uart_num: Numero de puerto UART. Puede ser `UART_NUM_0` hasta `UART_NUM_2`
+- rx_buffer_size: Tamaño del buffer del receptor. Un valor por ejemplo es `1024 * 2`
+- tx_buffer_size: Tamaño del buffer del transmisor. Se coloca un 0 para que la funcion de envio de datos sea bloqueante osea que espera que se envie el dato. Si se coloca un valor (ej. 1024), será no bloqueante (copia a memoria y retorna rápido)
+- queue_size: Tamaño de la cola, este no guerda datos sino eventos. Una cola de 10 a 20 es lo mas usado
+- uart_queue: Puntero al handle de eventos FreeRTOS. Este tema se vera mas adelante. Si solo va a leer por polling colocar NULL
+- intr_alloc_flags: Flags usandos para la interrupcion. Comunmete se usa 0
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_FAIL: Error de parametros
+
+#### Estructura con la configuracion UART
+
+`uart_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ----------- | ----------- |
+| baud_rate | Los baudios de comunicacion | int |
+| data_bits | Tamaño del byte UART | uart_word_length_t |
+| parity | Paridad del modo UART | uart_parity_t |
+| stop_bits | Bits de stop | uart_stop_bits_t |
+| flow_ctrl | Modo control de flujo | uart_hw_flowcontrol_t |
+| rx_flow_ctrl_thresh | Umbral RTS HS | uint8_t |
+| source_clk | Seleccion del reloj de origen | uart_sclk_t |
+| allow_pd | Guarda los registros en modo sleep | uint32_t |
+| flags | Estructura con las flags de configuracion | int |
+
+---> ==Caracteristicas==
+
+1) Para un ESP32 se suele utilizar 115200 baudios. Un valor como 9600 se utilizaba para modelos GPS viejos. Para una alta velocidad se utiliza 921600
+2) En la mayoria de casos se usa `UART_DATA_8_BITS`
+3) En la mayoria de casos se usa `UART_PARITY_DISABLE`
+4) En la mayoria de casos se usa `UART_STOP_BITS_1`
+5) Si se usan 2 cables usar `UART_HW_FLOWCTRL_DISABLE`. Si se usan 4 cables usar `UART_HW_FLOWCTRL_CTS_RTS`, vital para altas velocidades (> 1Mbps) para evitar que el buffer se desborde si el ESP32 no alcanza a leer
+6) Con `UART_SCLK_DEFAULT` deja que el driver elija, normalmente usa el reloj APB de 80MHz
+
+#### Funcion para configurar los aspectos de comunicacion UART
+
+`esp_err_t uart_param_config(uart_port_t uart_num, const uart_config_t *uart_config)`
+
+---> **Parametros**
+
+- uart_num: Numero de puerto UART [in]
+- uart_config: Puntero a la estructura con la configuracion UART [in]
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+-ESP_FAIL: Error de parametros o baudios inalcanzable
+
+#### Funcion para configurar los pines de comunicacion
+
+`esp_err_t uart_set_pin(uart_port_t uart_num, int tx_io_num, int rx_io_num, int rts_io_num, int cts_io_num)`
+
+> Utilizar la macro `UART_PIN_NO_CHANGE` sobre un paramtros indica que no se va a usar el pin
+
+---> **Parametros**
+
+- uart_num: Numero de puerto UART
+- tx_io_num: Numero de pin GPIO para Tx
+- rx_io_num: Numero de pin GPIO para Rx
+- rts_io_num: Numero de pin GPIO para Rts
+- cts_io_num: Numero de pin GPIO para Cts
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_FAIL: Error de parametros
+
+#### Funcion para enviar datos UART
+
+`int uart_write_bytes(uart_port_t uart_num, const void *src, size_t size)`
+
+---> **Parametros**
+
+- uart_num: Numero de puerto UART
+- src: Puntero al buffer con datos
+- size: Tamaño de los datos a enviar
+
+---> **Retorna**
+
+- -1 si hubo error en los parametros
+- Otros, que son valores a partir de 0, siendo el numero de bytes yendo al FIFO[^4] Tx
+
+[^4]: FIFO; First Input first output. Nomenclatura que referencia que el primer dato que entra es el primero en salir
+
+#### Funcion para recibir o leer datos UART
+
+`int uart_read_bytes(uart_port_t uart_num, void *buf, uint32_t length, TickType_t ticks_to_wait)`
+
+---> **Parametros**
+
+- uart_num: Numero de puerto UART
+- buf: Puntero al buffer donde se guardan los datos
+- lenght: Tamaño de los datos
+- ticks_to_wait: sTimeout o espera, contado en RTOS Ticks. Utilizar la macro pdMS_TO_TICKS para pasar de milisegundos a ticks
+
+---> **Retorna**
+
+- -1 si hubo error en los parametros
+- Otros, que son valores a partir de 0, siendo el numero de bytes leidos
+
+> Estas dos funciones son las pricipales, despues hay algunas que son complementarias que sirves para ciertas situaciones, como por ejemplo: para limpiar el Buffer de entrada `uart_flush_input()`, consultar datos disponibles `uart_get_buffered_data_len()` y para esperar que se termine el envio `uart_wait_tx_done`
+
+---
