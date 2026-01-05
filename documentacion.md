@@ -824,6 +824,35 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 
 `int uart_write_bytes(uart_port_t uart_num, const void *src, size_t size)`
 
+---> **Parametros**
+
+- uart_num: Numero de puerto UART
+- src: Puntero al buffer con datos
+- size: Tamaño de los datos a enviar
+
+---> **Retorna**
+
+- -1 si hubo error en los parametros
+- Otros, que son valores a partir de 0, siendo el numero de bytes yendo al FIFO[^4] Tx
+
+[^4]: FIFO; First Input first output. Nomenclatura que referencia que el primer dato que entra es el primero en salir
+
 #### Funcion para recibir o leer datos UART
 
 `int uart_read_bytes(uart_port_t uart_num, void *buf, uint32_t length, TickType_t ticks_to_wait)`
+
+---> **Parametros**
+
+- uart_num: Numero de puerto UART
+- buf: Puntero al buffer donde se guardan los datos
+- lenght: Tamaño de los datos
+- ticks_to_wait: sTimeout o espera, contado en RTOS Ticks. Utilizar la macro pdMS_TO_TICKS para pasar de milisegundos a ticks
+
+---> **Retorna**
+
+- -1 si hubo error en los parametros
+- Otros, que son valores a partir de 0, siendo el numero de bytes leidos
+
+> Estas dos funciones son las pricipales, despues hay algunas que son complementarias que sirves para ciertas situaciones, como por ejemplo: para limpiar el Buffer de entrada `uart_flush_input()`, consultar datos disponibles `uart_get_buffered_data_len()` y para esperar que se termine el envio `uart_wait_tx_done`
+
+---
