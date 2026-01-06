@@ -19,7 +19,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [Sensor Touch (Pines tactiles)](#sensor-touch-pines-tactiles)
 - [UART echo (Universal Asynchronous Receiver-Transmitter)](#uart-universal-asynchronous-receiver-transmitter)
 - [NVS (Non-Volatile Storage)](#nvs-non-volatile-storage)
-- Timers (GPTimer)
+- [Timers (GPTimer)](#gptimer-general-purpose-timer)
 - Power Modes
 
 ### Parte 2: Aprendiendo el freeRTOS
@@ -56,7 +56,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `gpio_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | pin_bit_mask | Mascara del pin a setear (1ULL << Pin Deseado) | uint64_t |
 | mode | modo del GPIO | gpio_mode_t |
 | pull_up_en | Habilita la resistencia Pull-Up | gpio_pullup_t |
@@ -125,7 +125,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `adc_oneshot_unit_init_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | unit_id | Unidad del ADC | adc_unit_t |
 | clk_src | Origen del reloj | adc_oneshot_clk_src_t |
 | ulp_mode | ADC controlado por ULP | adc_ulp_mode_t |
@@ -141,7 +141,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `adc_oneshot_chan_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | atten | Atenuacion del ADC | adc_atten_t |
 | bitwidth | Ancho de bits | adc_bitwidth_t |
 
@@ -249,7 +249,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `adc_cali_line_fitting_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | unit_id | La unidad ADC en donde vienen los valores | adc_unit_t |
 | atten | Atenuacion que el ADC utiliza | adc_bitwidth_t |
 | bitwidth | Ancho de bits que el ADC utiliza | adc_bitwidth_t |
@@ -327,7 +327,7 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 `ledc_timer_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
 | duty_resolution | Resolucion del canal | ledc_timer_bit_t |
 | timer_num | Origen del timer del canal | ledc_timer_t |
@@ -364,7 +364,7 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 `ledc_channel_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | gpio_num | Numero de GPIO a utilizar | int |
 | speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
 | channel | Canal LEDC | ledc_channel_t |
@@ -532,7 +532,7 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 `dac_oneshot_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | chan_id | Canal DAC | dac_channel_t |
 
 ---> ==Caracteristicas==
@@ -608,7 +608,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 `touch_sensor_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | power_on_wait_us | El tiempo de espera entre el encendido de canal y la medicion | uint32_t |
 | meas_interval_us | Intervalo de medicion entre cada canal | uint32_t |
 | intr_trig_mode | Tipo de disparo del modo interrupcion | touch_intr_trig_mode_t |
@@ -664,7 +664,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 `touch_channel_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | abs_active_thresh | El umbral de activacion | uint32_t |
 | charge_speed | Velocidad de carga y descarga del pad touch | touch_charge_speed_t |
 | init_charge_volt | Voltaje inicial antes de cargar y descargar el pad tactil | touch_init_charge_volt_t |
@@ -965,3 +965,18 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 - ESP_ERR_NVS_INVALID_HANDLE si el identificador se ha cerrado o es nulo
 - ESP_ERR_NVS_INVALID_NAME si el nombre de la clave no cumple las restricciones
 - ESP_ERR_NVS_INVALID_LENGTH si la longitud no es suficiente para almacenar los datos
+
+---
+
+### GPTimer (General Purpose Timer)
+
+#### Libreria: `#include "driver/gptimer.h"`
+
+#### Estructura de configuracion del GPT
+
+`gptimer_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ------------ | ------------ |
+| clk_src | Origen del reloj GPT | gptimer_clock_source_t |
+| - | - | - |
