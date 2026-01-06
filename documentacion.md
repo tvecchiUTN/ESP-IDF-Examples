@@ -979,4 +979,34 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ------------ | ------------ |
 | clk_src | Origen del reloj GPT | gptimer_clock_source_t |
-| - | - | - |
+| direction | Direccion de cuenta | gptimer_count_direction_t |
+| resolution_hz | Resolucion de contado o frecuencia de trabajo en Hz | uint32_t |
+| intr_priority | Prioridad de interrupcion | int |
+| intr_shared | Comparte el timer interruptor con otro perifericos | uint32_t |
+| allow_pd | Permite al driver que la energia sea apagada cuando entre en modo sleep | uint32_t |
+| flags | Flags de configuracion GPT | 0 |
+
+---> ==Caracteristicas==
+
+1)
+
+#### Handler para manejo del GPTimer
+
+`gptimer_handle_t`
+
+#### Funcion para crear el GPTimer
+
+`esp_err_t gptimer_new_timer(const gptimer_config_t *config, gptimer_handle_t *ret_timer)`
+
+---> **Parametros**
+
+- config: Puntero a la estructura de configuracion GPT [in]
+- ret_timer: Puntero al manejador de GPT [out]
+
+---> **Retorna**
+
+- ESP_OK: GPTimer creado correctamente
+- ESP_ERR_INVALID_ARG: GPTimer creado falló debido a un argumento no válido
+- ESP_ERR_NO_MEM: GPTimer creado falló debido a falta de memoria
+- ESP_ERR_NOT_FOUND: GPTimer creado falló debido a que todos los temporizadores de hardware se agotaron y no hay ninguno libre
+- ESP_FAIL: GPTimer creado falló debido a otro error
