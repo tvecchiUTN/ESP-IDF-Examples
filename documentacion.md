@@ -49,8 +49,6 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 
 ### GPIO (General Purpose Input Output)
 
-Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker) y recibir una señal digital (pulsador)
-
 #### Libreria: `#include "driver/gpio.h"`
 
 #### Estructura para configuracion
@@ -59,7 +57,7 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 | Variable | Descripcion | Tipo de variable |
 | ----------- | ----------- | ----------- |
-| pin_bit_mask | Mascara del pin a setear (1ULL[^1] << Pin Deseado)[^2] | uint64_t |
+| pin_bit_mask | Mascara del pin a setear (1ULL << Pin Deseado) | uint64_t |
 | mode | modo del GPIO | gpio_mode_t |
 | pull_up_en | Habilita la resistencia Pull-Up | gpio_pullup_t |
 | pull_down_en | Habilita la resistencia Pull-Down | gpio_pulldown_t |
@@ -67,13 +65,9 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 > Aviso: Los pines 34, 35, 36 y 39 no tiene resistencia interna y solo son INPUT. Si intentas usarlos como OUTPUT o activar pull_up_en, no funcionará.
 
-[^1]: 1ULL significa un 1 en Unsigned Long Long, muy utilizado en aritmetica a nivel de bits.
-
-[^2]: Si se quiere añadir un pin mas, se utiliza el signo OR a nivel de bits (" | "), ejemplo: (1ULL << PinDeseado0) | (1ULL << PinDeseado1)
-
 ---> ==Caracteristicas==
 
-1) Los modos que pueden tener el GPIO pueden ser, OUTPUT (Leds, actuadores, etc), INPUT (Pulsadores, sensores, etc), INPUT_OUTPUT (Habilita ambos para, por ejemplo, saber el estado del led), y los por ultimo, los modos open-drain (Utilizados para protocolos de comunicacion, por ejemplo, I2C).
+1) Los modos que pueden tener el GPIO pueden ser, OUTPUT (Leds, actuadores, etc), INPUT (Pulsadores, sensores, etc), INPUT_OUTPUT (Habilita ambos para, por ejemplo, saber el estado del led), y los por ultimo, los modos open-drain (Utilizados para protocolos de comunicacion, por ejemplo, I2C). 1ULL significa un 1 en Unsigned Long Long, muy utilizado en aritmetica a nivel de bits. Si se quiere añadir un pin mas, se utiliza el signo OR a nivel de bits (" | "), ejemplo: (1ULL << PinDeseado0) | (1ULL << PinDeseado1).
 2) Los valores que se le pueden dar a pullUp y pullDown pueden ser entre 0 o 1, no es necesario utilizar la macro.
 3) Para los actuadores, el tipo de interrupcion suele ser DISABLE, pero suele ser muy utilizado por pulsadores, o entradas, para que interrumpa una tarea cuando se activan. Su uso se ve en el siguiente [ejemplo](https://github.com/tvecchiUTN/ESP-IDF-Examples/blob/066bb0f6af8ad119528b7f6d8cbe68b96804833e/Iniciales/2.1-SigInpInter/main/main.c). Los valores de interrupt son demasiadas pero dependen pricipalmente de como quiero que se comporte la entrada; cuando la señal decae, es positiva, es negativa, etc.
 
@@ -83,7 +77,7 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 
 ---> **Parametros**
 
-- pGPIOConfig: Puntero a la estructura **gpio_config_t** [in]
+- pGPIOConfig: Puntero a la estructura de configuracion GPIO [in]
 
 ---> **Retorna**
 
@@ -134,15 +128,13 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 | ----------- | ----------- | ----------- |
 | unit_id | Unidad del ADC | adc_unit_t |
 | clk_src | Origen del reloj | adc_oneshot_clk_src_t |
-| ulp_mode | ADC controlado por ULP[^3] | adc_ulp_mode_t |
-
-[^3]: ULP (Ultra Low Power) procesador pequeño y dedicado que funciona con un consumo minimo de energia
+| ulp_mode | ADC controlado por ULP | adc_ulp_mode_t |
 
 ---> ==Caracteristicas==
 
 1) La unidad del adc suele ser 1 (`ADC_UNIT_1`) o 2 (`ADC_UNIT_2`)
 2) Selecciona el orien del reloj, comunmente se utiliza 0 para que utilize el default o por defecto
-3) Selecciona si el adc va a funcionar cuando este en modo ULP. Comunmente se utiliza `ADC_ULP_MODE_DISABLE`
+3) Selecciona si el adc va a funcionar cuando este en modo ULP. Comunmente se utiliza `ADC_ULP_MODE_DISABLE`. ULP (Ultra Low Power) procesador pequeño y dedicado que funciona con un consumo minimo de energia
 
 #### Estructura para configuracion de canal
 
@@ -161,8 +153,6 @@ Los dos ejemplos claros que se vieron en este tema es: encender un led (Blinker)
 #### Handle para ADC en modo oneshot
 
 `adc_oneshot_unit_handle_t`
-
-Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handlers.
 
 #### Funcion para configuracion inicial
 
@@ -316,7 +306,7 @@ Con este handler manejo al dispositivo. Si quiero manejar 3 ADC, utilizo 3 handl
 
 #### ADC Continuous Mode (Lectura por DMA)
 
-Nota para usuarios avanzados (DSP / Audio): Si tu proyecto requiere leer señales a alta velocidad (muestreo constante) para procesar audio, calcular FFT (Transformada Rápida de Fourier) o analizar vibraciones, NO uses el modo OneShot.
+Nota para usuarios avanzados (DSP / Audio): Si el proyecto requiere leer señales a alta velocidad (muestreo constante) para procesar audio, calcular FFT (Transformada Rápida de Fourier) o analizar vibraciones, NO uses el modo OneShot.
 
 ¿Por qué?: El modo OneShot es bloqueante y lento para estas tareas.
 
@@ -521,7 +511,7 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 - ESP_ERR_INVALID_STATE: Canal no inicializado o modo fade no instalado
 - ESP_ERR_INVALID_ARG: Argumentos invalidos
 
-> **Recomendaciones**: No llamar a `ledc_set_duty` mientras el fade esta en uso. Si se desea hacer un fade muy largo, reducir la frecuencia. Existe una estructura avanzada llamada ledc_fade_param_config_t, pero se usa solo para encadenar múltiples desvanecimientos complejos (curvas gamma).
+> **Recomendaciones**: No llamar a `ledc_set_duty` mientras el fade esta en uso. Si se desea hacer un fade muy largo, reducir la frecuencia. Existe una estructura avanzada llamada `ledc_fade_param_config_t`, pero se usa solo para encadenar múltiples desvanecimientos complejos (curvas gamma).
 
 #### Aplicaciones
 
@@ -833,9 +823,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 ---> **Retorna**
 
 - -1 si hubo error en los parametros
-- Otros, que son valores a partir de 0, siendo el numero de bytes yendo al FIFO[^4] Tx
-
-[^4]: FIFO; First Input first output. Nomenclatura que referencia que el primer dato que entra es el primero en salir
+- Otros, que son valores a partir de 0, siendo el numero de bytes yendo al FIFO Tx. FIFO; First Input first output. Nomenclatura que referencia que el primer dato que entra es el primero en salir
 
 #### Funcion para recibir o leer datos UART
 
