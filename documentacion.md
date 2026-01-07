@@ -988,7 +988,12 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 
 ---> ==Caracteristicas==
 
-1)
+1) **Buscar informacion**
+2) Setear la direccion de contado es, ya sea para arriba o para abajo. Se usa `GPTIMER_COUNT_UP` o `GPTIMER_COUNT_DOWN`
+3) Resolucion del contador interno. Cada tick es equivalente a (1 / resolucion) segundos. **CHEQUEAR SI ESTA BIEN** Un valor de frecuencia utilizado es 1 MHz osea (1*1000*1000) Hz, que usando la formula, seria un tick es un milisegundo
+4) Setea la prioridad de interrupcion. Dependiendo de su uso, va de 0 (Prioridad por defecto) a 3 (Maxima prioridad)
+5) Esta seccion le permite al driver hacer un backup en la memoria cuando entre en modo sleep. Segun la documentacion, puede consumir hasta 30 bytes.
+6) Cambios leves en algunos aspectos del driver.
 
 #### Handler para manejo del GPTimer
 
@@ -1010,3 +1015,73 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 - ESP_ERR_NO_MEM: GPTimer creado falló debido a falta de memoria
 - ESP_ERR_NOT_FOUND: GPTimer creado falló debido a que todos los temporizadores de hardware se agotaron y no hay ninguno libre
 - ESP_FAIL: GPTimer creado falló debido a otro error
+
+#### Funcion para habilitar el GPTimer
+
+`esp_err_t gptimer_enable(gptimer_handle_t timer)`
+
+> La funcion tambien incluye su respectiva funcion para desabilitarla
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+
+---> **Retorna**
+
+- ESP_OK: GPTimer habilitado sin errores
+- ESP_ERR_INVALID_ARG: Habilitar GPTimer falló debido a un error de argumentos
+- ESP_ERR_INVALID_STATE: Habilitar GPTimer falló debido a que ya estaba habilitado
+- ESP_FAIL: Habilitar GPTimer falló debido a otros errores
+
+---
+
+#### Funcion para iniciar el contador
+
+`esp_err_t gptimer_start(gptimer_handle_t timer)`
+
+> Su funcion inversa, para frenar el contador, es `gptimer_stop()`
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+
+---> **Retorna**
+
+- ESP_OK: Inicio exitoso del timer
+- ESP_ERR_INVALID_ARG: Inicio el contador fallo por error de armgumetos
+- ESP_ERR_INVALID_STATE: Iniciar el contador fallo porque no estaba habilitado o ya se inicio
+- ESP_FAIL: Iniciar el contador fallo debido a otro error
+
+#### Funcion setear un valor al contador
+
+`esp_err_t gptimer_set_raw_count(gptimer_handle_t timer, uint64_t value)`
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- value: Valor a setear
+
+---> **Retorna**
+
+- ESP_OK: Valor seteado correctamente
+- ESP_ERR_INVALID_ARG: Setar el valor fallo debido a error de argumentos
+- ESP_FAIL: Setear el valor fallo debido a otros errores
+
+#### Funcion para obtener el valor del contador
+
+`esp_err_t gptimer_get_raw_count(gptimer_handle_t timer, uint64_t *value)`
+
+> Debido a que el valor que te devuelve la funcion es el crudo (raw), se suele utilizar esta funcion que te devuelve el valor calibrado, notese que el valor de retorno esta en Hz. `gptimer_get_resolution()`. Aunque la resolucion suele ser la misma que se seteo en la primera configuracion, ciertos relojes inestables hacen una calibracion.
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- value: Puntero donde se devuelve el valor del contador
+
+---> **Retorna**
+
+- ESP_OK: Valor obtenido correctamente
+- ESP_ERR_INVALID_ARG: Obtener el valor fallo debido a error de argumentos
+- ESP_FAIL: Obtener el valor fallo debido a otros errores
+
+---
