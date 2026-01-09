@@ -20,7 +20,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [UART echo (Universal Asynchronous Receiver-Transmitter)](#uart-universal-asynchronous-receiver-transmitter)
 - [NVS (Non-Volatile Storage)](#nvs-non-volatile-storage)
 - [Timers (GPTimer)](#gptimer-general-purpose-timer)
-- Power Modes
+- [Power Modes](#power-modes)
 
 ### Parte 2: Aprendiendo el freeRTOS
 
@@ -990,7 +990,7 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 
 1) Se utiliza `GPTIMER_CLK_SRC_DEFAULT`, normalmente deriva del reloj APB a 80MHz
 2) Setear la direccion de contado es, ya sea para arriba o para abajo. Se usa `GPTIMER_COUNT_UP` o `GPTIMER_COUNT_DOWN`
-3) Resolucion del contador interno. Cada tick es equivalente a (1 / resolucion) segundos. **CHEQUEAR SI ESTA BIEN** Un valor de frecuencia utilizado es 1 MHz osea (1*1000*1000) Hz, que usando la formula, seria un tick es un microsegundo
+3) Resolucion del contador interno. Cada tick es equivalente a (1 / resolucion) segundos. Un valor de frecuencia utilizado es 1 MHz osea (1000 x 1000) Hz, que usando la formula, seria un tick es un microsegundo
 4) Setea la prioridad de interrupcion. Dependiendo de su uso, va de 0 (Prioridad por defecto) a 3 (Maxima prioridad)
 5) Esta seccion le permite al driver hacer un backup en la memoria cuando entre en modo sleep. Segun la documentacion, puede consumir hasta 30 bytes.
 6) Cambios leves en algunos aspectos del driver.
@@ -1150,3 +1150,52 @@ Su unico miembro es la variable `on_alarm` y alli se dejan las funciones callbac
 - ESP_FAIL: Set event callbacks failed because of other error
 
 ---
+
+### Power modes
+
+#### Libreria: `#include "esp_sleep.h"`
+
+Tambien se suele necesitar `#include "driver/rtc_io.h"` que se usa para despertar al chip en algunos modos
+
+#### Funcion para despertarse a partir de un determinado tiempo
+
+`esp_err_t esp_sleep_enable_timer_wakeup(uint64_t time_in_us)`
+
+---> **Parametros**
+
+- time_in_us: Tiempo antes de levantarse, en microsegundos
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_INVALID_ARG: Valor fuera de rango
+
+#### Funcion para despertarse a partir de un pin
+
+`esp_err_t esp_sleep_enable_ext0_wakeup(gpio_num_t gpio_num, int level)`
+
+---> **Parametros**
+
+- gpio_num: Numero de GPIO usado para levantarse. Solo los pines con RTC pueden ser usados. Los pines son: 0, 2, 4, 12-15, 25-27, 32-39
+- level: Nivel de entrada en la que se despierta
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_INVALID_ARG: Si el GPIO seleccionado no es RTC o modo invalido
+- ESP_ERR_INVALID_STATE: Conflicto al disparar el despertador
+
+#### Funcion para despertarse a partir de multiples pines
+
+`esp_err_t esp_sleep_enable_ext1_wakeup_io(uint64_t io_mask, esp_sleep_ext1_wakeup_mode_t level_mode)`
+
+---> **Parametros**
+
+- io_mask: Mascara de bits de los GPIO que causan que se levanten. Aqui se ocupa lo mismo que se usa en la primera parte, la mascara de bits `1ULL << PinDeseado`. Si se quiere añadir mas, unirlos con OR `|`
+- level_mode: Nivel de entrada en el que se despierta. Se usa `ESP_EXT1_WAKEUP_ALL_LOW` y `ESP_EXT1_WAKEUP_ANY_HIGH`
+
+---> **Retorna**
+
+- ESP_OK: Si salio todo bien
+- ESP_ERR_INVALID_ARG: Si los GPIO seleccionados no son RTC o modo invalido
+- ESP_ERR_NOT_ALLOWED: Cuando el nivel de activación será diferente entre IO ext1 si !SOC_PM_SUPPORT_EXT1_WAKEUP_MODE_PER_PIN **Verificar significado**
