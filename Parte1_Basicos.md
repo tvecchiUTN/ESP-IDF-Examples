@@ -1,16 +1,4 @@
-# Bienvenidos
-
-## Introduccion
-
-El presente documento o **CheatSheet** sirve de guia para las funciones o variables mas utilizadas a la hora de programar con el framework **ESP-IDF**.
-
-El microcontrolador utilizado es el **ESP32**, la aclaracion es debido a que para otras placas se utilizan otras funciones.
-
-En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/tvecchiUTN/ESP-IDF-Examples/tree/main) en donde se guardaron los ejemplos. Ahi se puede ver las variables necesitadas y sus funciones.
-
-## Indice
-
-### Parte 1: Funciones basicas
+# Parte 1: Funciones basicas
 
 - [GPIO](#gpio-general-purpose-input-output)
 - [ADC (Analog Digital Converter)](#adc-analog-digital-converter)
@@ -21,27 +9,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [NVS (Non-Volatile Storage)](#nvs-non-volatile-storage)
 - [Timers (GPTimer)](#gptimer-general-purpose-timer)
 - [Power Modes](#power-modes)
-
-### Parte 2: Aprendiendo el freeRTOS
-
-- Creacion de tareas
-- Pasar argumentos a las tareas
-- Prioridad de tareas
-- Modo Dual Core
-- Colas (Productor-Consumidor)
-- Semaforos o MUTEX (Evitar Race Conditions)
-- Grupos de eventos
-- Notificacion de tareas
-
-### Parte 3: Conectividad y Drivers
-
-- Estacion WiFi (Conectarse a un Router, manejo de eventos IP)
-- SoftAP WiFi (Crear propia red de WiFi)
-- Cliente HTTP
-- Escaner I2C
-- Driver I2C customizable
-- Maestro SPI
-- RMT infrarojo
+- [Utilidades del Sistema (Logging & Delays)](#logging-y-delays)
 
 ## Desarrollo de temas
 
@@ -74,6 +42,8 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 #### Funcion de configuracion
 
 `esp_err_t gpio_config(const gpio_config_t *pGPIOConfig)`
+
+> Algunos pines, como el GPIO12, GPIO13 pueden quedar en un estado desconocido tras el arranque. Esta función resetea el pin a su estado por defecto (deshabilitado) y limpia cualquier configuración previa del bootloader. Usar la funcion `gpio_reset_pin()`
 
 ---> **Parametros**
 
@@ -603,6 +573,8 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 
 #### Libreria: `#include "driver/touch_sens.h"`
 
+> Para un ESP32 se recomienda usar `driver/touch_pad.h`, por lo que a la hora de utilizar la libreria, verificar uso
+
 #### Estructura para configurar el sensor touch
 
 `touch_sensor_config_t`
@@ -742,7 +714,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 
 - uart_num: Numero de puerto UART. Puede ser `UART_NUM_0` hasta `UART_NUM_2`
 - rx_buffer_size: Tamaño del buffer del receptor. Un valor por ejemplo es `1024 * 2`
-- tx_buffer_size: Tamaño del buffer del transmisor. Se coloca un 0 para que la funcion de envio de datos sea bloqueante osea que espera que se envie el dato. Si se coloca un valor (ej. 1024), será no bloqueante (copia a memoria y retorna rápido)
+- tx_buffer_size: Tamaño del buffer del transmisor. Para empezar, usar siempre 0 en TX buffer
 - queue_size: Tamaño de la cola, este no guerda datos sino eventos. Una cola de 10 a 20 es lo mas usado
 - uart_queue: Puntero al handle de eventos FreeRTOS. Este tema se vera mas adelante. Si solo va a leer por polling colocar NULL
 - intr_alloc_flags: Flags usandos para la interrupcion. Comunmete se usa 0
@@ -950,7 +922,8 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 
 > x: Usar "u" si el dato es unsigned. Usar "i" si es con signo.
 n: Tipo de dato, ya sea 8, 16, 32 o 64
-Otros tipos: str para string. blob para una estructura. Para ambos casos hay que especificar el tamaño
+Otros tipos: str para string. blob para una estructura. Para ambos casos hay que especificar el tamaño.
+**¡IMPORTANTE!** El nombre de la clave (key) tiene un límite máximo de 15 caracteres (sin contar el terminador nulo)
 
 - handle: Handle del NVS
 - key: Puntero al nombre o key a buscar
@@ -1221,3 +1194,28 @@ Tambien se suele necesitar `#include "driver/rtc_io.h"` que se usa para desperta
 `esp_sleep_wakeup_cause_t esp_sleep_get_wakeup_cause(void)`
 
 La fucnion retorna el motivo por la cual se desperto, se verifica con el tipo `esp_sleep_source_t` que pueden llegar a ser: por GPIO, touch, UART, wifi, entre otros.
+
+---
+
+### Logging y Delays
+
+#### Libreria logging: `#include "esp_log.h"`
+
+#### Macros utilizadas
+
+- Error: `ESP_LOGE(TAG, "Error: %s", msg)` su color en consola es ROJO
+- Advertencia: `ESP_LOGW(TAG, "Warning...")` su color en consola es AMARILLO
+- Informacion general: `ESP_LOGI(TAG, "Info...")` su color en consola es VERDE
+- Debuging: `ESP_LOGD(TAG, "Debug...")` su color en consola es BLANCO
+
+EL TAG al inicio es un string, por ejemplo: `static const char *TAG = "MiProyecto"`
+
+#### Libreria delay: `#include "freertos/FreeRTOS.h"` y `#include "freertos/task.h"`
+
+#### Funcion para esperar o delay
+
+`void vTaskDelay(const TickType_t xTicksToDelay)`
+
+---> **Parametro**
+
+- xTicksToDelay: Cantidad de ticks que debe hacer delay, para pasar de milisegudnos a ticks, usar la macro `pdMS_TO_TICKS(time_in_ms)`
