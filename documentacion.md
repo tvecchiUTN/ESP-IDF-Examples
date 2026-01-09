@@ -1192,10 +1192,32 @@ Tambien se suele necesitar `#include "driver/rtc_io.h"` que se usa para desperta
 ---> **Parametros**
 
 - io_mask: Mascara de bits de los GPIO que causan que se levanten. Aqui se ocupa lo mismo que se usa en la primera parte, la mascara de bits `1ULL << PinDeseado`. Si se quiere añadir mas, unirlos con OR `|`
-- level_mode: Nivel de entrada en el que se despierta. Se usa `ESP_EXT1_WAKEUP_ALL_LOW` y `ESP_EXT1_WAKEUP_ANY_HIGH`
+- level_mode: Nivel de entrada en el que se despierta. Se usa `ESP_EXT1_WAKEUP_ALL_LOW` que despierta si TODOS los pines de la máscara están en bajo y `ESP_EXT1_WAKEUP_ANY_HIGH` que sespierta si CUALQUIERA de los pines de la máscara está en alto
 
 ---> **Retorna**
 
 - ESP_OK: Si salio todo bien
 - ESP_ERR_INVALID_ARG: Si los GPIO seleccionados no son RTC o modo invalido
-- ESP_ERR_NOT_ALLOWED: Cuando el nivel de activación será diferente entre IO ext1 si !SOC_PM_SUPPORT_EXT1_WAKEUP_MODE_PER_PIN **Verificar significado**
+- ESP_ERR_NOT_ALLOWED: Cuando el nivel de activación será diferente entre IO ext1 si !`SOC_PM_SUPPORT_EXT1_WAKEUP_MODE_PER_PIN`. Significa que si el chip no soporta configuración por pin (como el ESP32 original), dará error `ESP_ERR_NOT_ALLOWED` si intentas una configuración lógica imposible o mixta que el hardware no entienda.
+
+#### Funcion para dormir, modo light
+
+`esp_err_t esp_light_sleep_start(void)`
+
+---> **Retorna**
+
+- ESP_OK: Salio todo bien, retorna luego de despertarse
+- ESP_ERR_SLEEP_REJECT: Modo dormir rechazado, fuente de activación establecida antes de la solicitud de suspensión
+- ESP_ERR_SLEEP_TOO_SHORT_SLEEP_DURATION: Después de deducir la sobrecarga del flujo de sueño, la duración final del sueño es demasiado corta para cubrir la duración mínima del sueño del chip, cuando la fuente de activación del temporizador RTC está habilitada.
+
+#### Funcion para dormir, modo deep
+
+`void esp_deep_sleep_start(void)`
+
+>La fucnion no retorna debido a que cuando se levante, este empieza al inico del `app_main`, a diferencia de light sleep que sige donde estaba
+
+#### Funcion para saber la causa por la cual se levanto
+
+`esp_sleep_wakeup_cause_t esp_sleep_get_wakeup_cause(void)`
+
+La fucnion retorna el motivo por la cual se desperto, se verifica con el tipo `esp_sleep_source_t` que pueden llegar a ser: por GPIO, touch, UART, wifi, entre otros.
