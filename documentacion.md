@@ -19,7 +19,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 - [Sensor Touch (Pines tactiles)](#sensor-touch-pines-tactiles)
 - [UART echo (Universal Asynchronous Receiver-Transmitter)](#uart-universal-asynchronous-receiver-transmitter)
 - [NVS (Non-Volatile Storage)](#nvs-non-volatile-storage)
-- Timers (GPTimer)
+- [Timers (GPTimer)](#gptimer-general-purpose-timer)
 - Power Modes
 
 ### Parte 2: Aprendiendo el freeRTOS
@@ -56,7 +56,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `gpio_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | pin_bit_mask | Mascara del pin a setear (1ULL << Pin Deseado) | uint64_t |
 | mode | modo del GPIO | gpio_mode_t |
 | pull_up_en | Habilita la resistencia Pull-Up | gpio_pullup_t |
@@ -125,7 +125,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `adc_oneshot_unit_init_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | unit_id | Unidad del ADC | adc_unit_t |
 | clk_src | Origen del reloj | adc_oneshot_clk_src_t |
 | ulp_mode | ADC controlado por ULP | adc_ulp_mode_t |
@@ -141,7 +141,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `adc_oneshot_chan_cfg_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | atten | Atenuacion del ADC | adc_atten_t |
 | bitwidth | Ancho de bits | adc_bitwidth_t |
 
@@ -249,7 +249,7 @@ En el siguiente link se encuentra el [Repositorio de GitHub](https://github.com/
 `adc_cali_line_fitting_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | unit_id | La unidad ADC en donde vienen los valores | adc_unit_t |
 | atten | Atenuacion que el ADC utiliza | adc_bitwidth_t |
 | bitwidth | Ancho de bits que el ADC utiliza | adc_bitwidth_t |
@@ -327,7 +327,7 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 `ledc_timer_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
 | duty_resolution | Resolucion del canal | ledc_timer_bit_t |
 | timer_num | Origen del timer del canal | ledc_timer_t |
@@ -364,7 +364,7 @@ Concepto clave: Configuras una frecuencia de muestreo (ej. 44100 Hz) y un patró
 `ledc_channel_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | gpio_num | Numero de GPIO a utilizar | int |
 | speed_mode | Velocidad del LEDC, puede ser high speed o low speed | ledc_mode_t |
 | channel | Canal LEDC | ledc_channel_t |
@@ -532,7 +532,7 @@ Permite cambiar el ciclo de trabajo (duty) de un valor a otro progresivamente en
 `dac_oneshot_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | chan_id | Canal DAC | dac_channel_t |
 
 ---> ==Caracteristicas==
@@ -608,7 +608,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 `touch_sensor_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | power_on_wait_us | El tiempo de espera entre el encendido de canal y la medicion | uint32_t |
 | meas_interval_us | Intervalo de medicion entre cada canal | uint32_t |
 | intr_trig_mode | Tipo de disparo del modo interrupcion | touch_intr_trig_mode_t |
@@ -664,7 +664,7 @@ En la libreria `#include "driver/dac_continuous.h"` se encuentra todo lo referid
 `touch_channel_config_t`
 
 | Variable | Descripcion | Tipo de variable |
-| ----------- | ----------- | ----------- |
+| ----------- | ------------ | ------------ |
 | abs_active_thresh | El umbral de activacion | uint32_t |
 | charge_speed | Velocidad de carga y descarga del pad touch | touch_charge_speed_t |
 | init_charge_volt | Voltaje inicial antes de cargar y descargar el pad tactil | touch_init_charge_volt_t |
@@ -965,3 +965,188 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 - ESP_ERR_NVS_INVALID_HANDLE si el identificador se ha cerrado o es nulo
 - ESP_ERR_NVS_INVALID_NAME si el nombre de la clave no cumple las restricciones
 - ESP_ERR_NVS_INVALID_LENGTH si la longitud no es suficiente para almacenar los datos
+
+---
+
+### GPTimer (General Purpose Timer)
+
+#### Libreria: `#include "driver/gptimer.h"`
+
+#### Estructura de configuracion del GPT
+
+`gptimer_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ------------ | ------------ |
+| clk_src | Origen del reloj GPT | gptimer_clock_source_t |
+| direction | Direccion de cuenta | gptimer_count_direction_t |
+| resolution_hz | Resolucion de contado o frecuencia de trabajo en Hz | uint32_t |
+| intr_priority | Prioridad de interrupcion | int |
+| intr_shared | Comparte el timer interruptor con otro perifericos | uint32_t |
+| allow_pd | Permite al driver que la energia sea apagada cuando entre en modo sleep | uint32_t |
+| flags | Flags de configuracion GPT | 0 |
+
+---> ==Caracteristicas==
+
+1) Se utiliza `GPTIMER_CLK_SRC_DEFAULT`, normalmente deriva del reloj APB a 80MHz
+2) Setear la direccion de contado es, ya sea para arriba o para abajo. Se usa `GPTIMER_COUNT_UP` o `GPTIMER_COUNT_DOWN`
+3) Resolucion del contador interno. Cada tick es equivalente a (1 / resolucion) segundos. **CHEQUEAR SI ESTA BIEN** Un valor de frecuencia utilizado es 1 MHz osea (1*1000*1000) Hz, que usando la formula, seria un tick es un microsegundo
+4) Setea la prioridad de interrupcion. Dependiendo de su uso, va de 0 (Prioridad por defecto) a 3 (Maxima prioridad)
+5) Esta seccion le permite al driver hacer un backup en la memoria cuando entre en modo sleep. Segun la documentacion, puede consumir hasta 30 bytes.
+6) Cambios leves en algunos aspectos del driver.
+
+#### Handler para manejo del GPTimer
+
+`gptimer_handle_t`
+
+#### Funcion para crear el GPTimer
+
+`esp_err_t gptimer_new_timer(const gptimer_config_t *config, gptimer_handle_t *ret_timer)`
+
+---> **Parametros**
+
+- config: Puntero a la estructura de configuracion GPT [in]
+- ret_timer: Puntero al manejador de GPT [out]
+
+---> **Retorna**
+
+- ESP_OK: GPTimer creado correctamente
+- ESP_ERR_INVALID_ARG: GPTimer creado falló debido a un argumento no válido
+- ESP_ERR_NO_MEM: GPTimer creado falló debido a falta de memoria
+- ESP_ERR_NOT_FOUND: GPTimer creado falló debido a que todos los temporizadores de hardware se agotaron y no hay ninguno libre
+- ESP_FAIL: GPTimer creado falló debido a otro error
+
+#### Funcion para habilitar el GPTimer
+
+`esp_err_t gptimer_enable(gptimer_handle_t timer)`
+
+> La funcion tambien incluye su respectiva funcion para desabilitarla
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+
+---> **Retorna**
+
+- ESP_OK: GPTimer habilitado sin errores
+- ESP_ERR_INVALID_ARG: Habilitar GPTimer falló debido a un error de argumentos
+- ESP_ERR_INVALID_STATE: Habilitar GPTimer falló debido a que ya estaba habilitado
+- ESP_FAIL: Habilitar GPTimer falló debido a otros errores
+
+---
+
+#### Funcion para iniciar el contador
+
+`esp_err_t gptimer_start(gptimer_handle_t timer)`
+
+> Su funcion inversa, para frenar el contador, es `gptimer_stop()`
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+
+---> **Retorna**
+
+- ESP_OK: Inicio exitoso del timer
+- ESP_ERR_INVALID_ARG: Inicio el contador fallo por error de armgumetos
+- ESP_ERR_INVALID_STATE: Iniciar el contador fallo porque no estaba habilitado o ya se inicio
+- ESP_FAIL: Iniciar el contador fallo debido a otro error
+
+#### Funcion setear un valor al contador
+
+`esp_err_t gptimer_set_raw_count(gptimer_handle_t timer, uint64_t value)`
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- value: Valor a setear
+
+---> **Retorna**
+
+- ESP_OK: Valor seteado correctamente
+- ESP_ERR_INVALID_ARG: Setar el valor fallo debido a error de argumentos
+- ESP_FAIL: Setear el valor fallo debido a otros errores
+
+#### Funcion para obtener el valor del contador
+
+`esp_err_t gptimer_get_raw_count(gptimer_handle_t timer, uint64_t *value)`
+
+> Debido a que el valor que te devuelve la funcion es el crudo (raw), se suele utilizar esta funcion que te devuelve el valor calibrado, notese que el valor de retorno esta en Hz. `gptimer_get_resolution()`. Aunque la resolucion suele ser la misma que se seteo en la primera configuracion, ciertos relojes inestables hacen una calibracion. Para saber cuantos tiempo paso se utiliza el siguiente calculo: **time = value / resolution_hz**
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- value: Puntero donde se devuelve el valor del contador
+
+---> **Retorna**
+
+- ESP_OK: Valor obtenido correctamente
+- ESP_ERR_INVALID_ARG: Obtener el valor fallo debido a error de argumentos
+- ESP_FAIL: Obtener el valor fallo debido a otros errores
+
+---
+
+#### Estructura para la configuracion de alarmas
+
+`gptimer_alarm_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ------------ | ------------ |
+| alarm_count | Valor objetivo de la alarma | uint64_t |
+| reload_count | Valor de la alarma cuando se reinicio | uint64_t |
+| auto_reload_on_alarm | Reinicia el valor del contador | uint32_t |
+| flags | Flags de la estructura | int |
+
+---> ==Caracteristicas==
+
+1) Cuando el contador llegue a este número, se dispara la alarma. Esta en Ticks, por lo tanto, hacer la conversion
+2) Si el auto-reload está activo, el contador salta a este valor tras la alarma. Normalmente para empezar devuelta
+3) Repeticion automatica. 1 para si, 0 para no
+
+#### Funcion para setear la accion de la alarma
+
+`esp_err_t gptimer_set_alarm_action(gptimer_handle_t timer, const gptimer_alarm_config_t *config)`
+
+> Debido a que la funcion se linkea en la memoria ram, la estructura de alarma debe estar como variable global o estatica.
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- config: Puntero a la estructura con la configuracion de la alarma. Configurar con NULL significa desactivar la alarma
+
+---> **Retorna**
+
+- ESP_OK: Alarma configurada correctamente
+- ESP_ERR_INVALID_ARG: Setear la alarma fallo debido a error de argumentos
+- ESP_FAIL: El seteo fallo debido a otros errores
+
+#### Estructura para registrar funciones en callbacks
+
+`gptimer_event_callbacks_t`
+
+Su unico miembro es la variable `on_alarm` y alli se dejan las funciones callbacks. El prototipo de estas funciones deben ser:
+
+- Tipo de funcion: `bool`
+- Ademas deben ser del tipo `IRAM_ATTR` para colocar la funcion en la ram en vez de que este en area de codigo
+- Parametro 1: `gptimer_handle_t timer` que es el manejador del GPTimer
+- Parametro 2: `const gptimer_alarm_event_data_t *edata` que es el dato de la alarma
+- Parametro 3: `void *user_ctx` que es el dato del usuario, los parametros que recibe
+
+#### Funcion para registrar un evento callback
+
+`esp_err_t gptimer_register_event_callbacks(gptimer_handle_t timer, const gptimer_event_callbacks_t *cbs, void *user_data)`
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- cbs: Puntero a la estructura con las funciones
+- user_data: Puntero en donde se envia los argumentos de las funciones
+
+---> **Retorna**
+
+- ESP_OK: Set event callbacks successfully
+- ESP_ERR_INVALID_ARG: Set event callbacks failed because of invalid argument
+- ESP_ERR_INVALID_STATE: Set event callbacks failed because the timer is not in init state
+- ESP_FAIL: Set event callbacks failed because of other error
+
+---
