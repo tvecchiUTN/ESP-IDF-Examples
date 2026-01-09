@@ -41,7 +41,7 @@ En este framework, el control es tuyo. Ten en cuenta estas diferencias vitales:
 
 La documentación está dividida en tres módulos según tu necesidad:
 
-### 🟢 [Parte 1: Funciones Básicas y Periféricos](./Parte1_Basicos.md)
+### 🟢 [Parte 1: Funciones Básicas y Periféricos](./Documentacion/Parte1_Basicos.md)
 *Dominando el Hardware.*
 * **Controlar pines:** [GPIO (Salida/Entrada)](./Parte1_Basicos.md#gpio-general-purpose-input-output)
 * **Leer sensores:** [ADC (Analógico)](./Parte1_Basicos.md#adc-analog-digital-converter)
@@ -50,14 +50,14 @@ La documentación está dividida en tres módulos según tu necesidad:
 * **Comunicación Serial:** [UART](./Parte1_Basicos.md#uart-universal-asynchronous-receiver-transmitter)
 * **Ahorro de energía:** [Power Modes](./Parte1_Basicos.md#power-modes) y [Timers](./Parte1_Basicos.md#gptimer-general-purpose-timer)
 
-### 🟡 [Parte 2: Sistema Operativo (FreeRTOS)](./Parte2_FreeRTOS.md)
+### 🟡 [Parte 2: Sistema Operativo (FreeRTOS)](./Documentacion/Parte2_FreeRTOS.md)
 *Dominando la Multitarea.*
 * Creación de Tareas (Multithreading).
 * Sincronización (Semáforos, Mutex).
 * Comunicación entre tareas (Colas/Queues).
 * Manejo de eventos.
 
-### 🔵 [Parte 3: Conectividad y Protocolos](./Parte3_Conectividad.md)
+### 🔵 [Parte 3: Conectividad y Protocolos](./Documentacion/Parte3_Conectividad.md)
 *Dominando el IoT.*
 * **WiFi:** Modo Estación (Cliente) y SoftAP (Router).
 * **Internet:** Cliente HTTP.
@@ -73,4 +73,4 @@ La documentación está dividida en tres módulos según tu necesidad:
 
 ## PinOut del ESP32
 
-![PinOut de la placa ESP32](PinOut-ESP32.jpg)
+![PinOut de la placa ESP32](./imagenes/PinOut-ESP32.jpg)
