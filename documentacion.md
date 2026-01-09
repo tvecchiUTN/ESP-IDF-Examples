@@ -988,9 +988,9 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 
 ---> ==Caracteristicas==
 
-1) **Buscar informacion**
+1) Se utiliza `GPTIMER_CLK_SRC_DEFAULT`, normalmente deriva del reloj APB a 80MHz
 2) Setear la direccion de contado es, ya sea para arriba o para abajo. Se usa `GPTIMER_COUNT_UP` o `GPTIMER_COUNT_DOWN`
-3) Resolucion del contador interno. Cada tick es equivalente a (1 / resolucion) segundos. **CHEQUEAR SI ESTA BIEN** Un valor de frecuencia utilizado es 1 MHz osea (1*1000*1000) Hz, que usando la formula, seria un tick es un milisegundo
+3) Resolucion del contador interno. Cada tick es equivalente a (1 / resolucion) segundos. **CHEQUEAR SI ESTA BIEN** Un valor de frecuencia utilizado es 1 MHz osea (1*1000*1000) Hz, que usando la formula, seria un tick es un microsegundo
 4) Setea la prioridad de interrupcion. Dependiendo de su uso, va de 0 (Prioridad por defecto) a 3 (Maxima prioridad)
 5) Esta seccion le permite al driver hacer un backup en la memoria cuando entre en modo sleep. Segun la documentacion, puede consumir hasta 30 bytes.
 6) Cambios leves en algunos aspectos del driver.
@@ -1071,7 +1071,7 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 
 `esp_err_t gptimer_get_raw_count(gptimer_handle_t timer, uint64_t *value)`
 
-> Debido a que el valor que te devuelve la funcion es el crudo (raw), se suele utilizar esta funcion que te devuelve el valor calibrado, notese que el valor de retorno esta en Hz. `gptimer_get_resolution()`. Aunque la resolucion suele ser la misma que se seteo en la primera configuracion, ciertos relojes inestables hacen una calibracion.
+> Debido a que el valor que te devuelve la funcion es el crudo (raw), se suele utilizar esta funcion que te devuelve el valor calibrado, notese que el valor de retorno esta en Hz. `gptimer_get_resolution()`. Aunque la resolucion suele ser la misma que se seteo en la primera configuracion, ciertos relojes inestables hacen una calibracion. Para saber cuantos tiempo paso se utiliza el siguiente calculo: **time = value / resolution_hz**
 
 ---> **Parametros**
 
@@ -1083,5 +1083,70 @@ Otros tipos: str para string. blob para una estructura. Para ambos casos hay que
 - ESP_OK: Valor obtenido correctamente
 - ESP_ERR_INVALID_ARG: Obtener el valor fallo debido a error de argumentos
 - ESP_FAIL: Obtener el valor fallo debido a otros errores
+
+---
+
+#### Estructura para la configuracion de alarmas
+
+`gptimer_alarm_config_t`
+
+| Variable | Descripcion | Tipo de variable |
+| ----------- | ------------ | ------------ |
+| alarm_count | Valor objetivo de la alarma | uint64_t |
+| reload_count | Valor de la alarma cuando se reinicio | uint64_t |
+| auto_reload_on_alarm | Reinicia el valor del contador | uint32_t |
+| flags | Flags de la estructura | int |
+
+---> ==Caracteristicas==
+
+1) Cuando el contador llegue a este número, se dispara la alarma. Esta en Ticks, por lo tanto, hacer la conversion
+2) Si el auto-reload está activo, el contador salta a este valor tras la alarma. Normalmente para empezar devuelta
+3) Repeticion automatica. 1 para si, 0 para no
+
+#### Funcion para setear la accion de la alarma
+
+`esp_err_t gptimer_set_alarm_action(gptimer_handle_t timer, const gptimer_alarm_config_t *config)`
+
+> Debido a que la funcion se linkea en la memoria ram, la estructura de alarma debe estar como variable global o estatica.
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- config: Puntero a la estructura con la configuracion de la alarma. Configurar con NULL significa desactivar la alarma
+
+---> **Retorna**
+
+- ESP_OK: Alarma configurada correctamente
+- ESP_ERR_INVALID_ARG: Setear la alarma fallo debido a error de argumentos
+- ESP_FAIL: El seteo fallo debido a otros errores
+
+#### Estructura para registrar funciones en callbacks
+
+`gptimer_event_callbacks_t`
+
+Su unico miembro es la variable `on_alarm` y alli se dejan las funciones callbacks. El prototipo de estas funciones deben ser:
+
+- Tipo de funcion: `bool`
+- Ademas deben ser del tipo `IRAM_ATTR` para colocar la funcion en la ram en vez de que este en area de codigo
+- Parametro 1: `gptimer_handle_t timer` que es el manejador del GPTimer
+- Parametro 2: `const gptimer_alarm_event_data_t *edata` que es el dato de la alarma
+- Parametro 3: `void *user_ctx` que es el dato del usuario, los parametros que recibe
+
+#### Funcion para registrar un evento callback
+
+`esp_err_t gptimer_register_event_callbacks(gptimer_handle_t timer, const gptimer_event_callbacks_t *cbs, void *user_data)`
+
+---> **Parametros**
+
+- timer: Manejador del GPTimer
+- cbs: Puntero a la estructura con las funciones
+- user_data: Puntero en donde se envia los argumentos de las funciones
+
+---> **Retorna**
+
+- ESP_OK: Set event callbacks successfully
+- ESP_ERR_INVALID_ARG: Set event callbacks failed because of invalid argument
+- ESP_ERR_INVALID_STATE: Set event callbacks failed because the timer is not in init state
+- ESP_FAIL: Set event callbacks failed because of other error
 
 ---
