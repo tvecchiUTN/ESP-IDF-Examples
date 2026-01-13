@@ -2,7 +2,7 @@
 
 - [Gestion de tareas](#creacion-de-tareas-task-create)
 - [Colas o Queues (Productor-Consumidor)](#colas-o-queue)
-- Semaforos y MUTEX
+- [Semaforos y MUTEX](#semaforos-y-mutex)
 - Notificaciones directas (Task notifications)
 - Grupos de eventos
 
@@ -63,3 +63,67 @@
 ### Colas o queue
 
 #### Libreria: `#include "freertos/queue.h"`
+
+#### Macro para crear la cola
+
+`xQueueCreate(uxQueueLength, uxItemSize)`
+
+---> **Parametros**
+
+- uxQueueLenght: Tamaño de la cola o cantidad de elementos
+- uxItemSize: Tamaño, en bytes, de cada elemento o item
+
+---> **Retorna**
+
+- El handle o manejador de la cola
+- Si no se pudo crear, retorna 0
+
+#### Macro para añadir un elemento al fondo
+
+`xQueueSend(xQueue, pvItemToQueue, xTicksToWait)`
+
+> Su macro contrario es `xQueueSendToFront` que añade el item al inicio
+
+---> **Parametros**
+
+- xQueue: Manejador de la cola
+- pvItemToQueue: Puntero al item a guardar
+- xTicksToWait: Tiempo, en ticks, que debe esperar la tarea para añadir un elemento en caso de que la cola este llena
+
+---> **Retorna**
+
+- pdTRUE: En caso de que el item se pudo añadir
+- errQUEUE_FULL: Otro error
+
+#### Funcion para obtener un item de la cola
+
+`BaseType_t xQueueReceive(QueueHandle_t xQueue, void *const pvBuffer, TickType_t xTicksToWait)`
+
+---> **Parametros**
+
+- xQueue: Manejador de la cola
+- pvBuffer: Puntero al buffer donde se guarda el elemento
+- xTicksToWait: Tiempo, en ticks, que debe esperar la tarea para retirar un elemento en caso de que la cola este vacia
+
+---> **Retorna**
+
+- pdTRUE: Si el item se pudo retirar de la cola
+- pdFALSE: Si hubo un error
+
+---
+
+#### Uso en Interrupciones (ISR)
+
+Las funciones xQueueSendFromISR y xQueueReceiveFromISR tienen un parámetro extra vital: `BaseType_t *pxHigherPriorityTaskWoken`
+
+**¿Qué es?**: Un puntero a una variable booleana.
+
+**¿Para qué sirve?**: La función pondrá esta variable en pdTRUE si la operación despertó a una tarea de mayor prioridad que la que se interrumpió.
+
+**¿Qué debo hacer?**: Si la variable termina en pdTRUE, debes llamar a `portYIELD_FROM_ISR()` al final de la interrupción para forzar el cambio de contexto inmediato.
+
+---
+
+### Semaforos y MUTEX
+
+#### Libreria: `#include "freertos/semphr.h"`
