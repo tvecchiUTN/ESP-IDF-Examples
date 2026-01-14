@@ -4,7 +4,7 @@
 - [Colas o Queues (Productor-Consumidor)](#colas-o-queue)
 - [Semaforos y MUTEX](#semaforos-y-mutex)
 - [Notificaciones directas (Task notifications)](#notificaciones-directas-task-notifications)
-- Grupos de eventos
+- [Grupos de eventos](#grupos-de-eventos)
 
 ## Desarrollo de temas
 
@@ -26,7 +26,7 @@
 - pcName: Puntero al string con el nombre. Esta debe ser menor a 16 caracteres o 16 bytes
 - usStackDepth: Tamaño del stack, un tamaño de 2048 para tareas simples esta bien. Usar 4096 si la funcion usa `printf` o logs
 - pvParameters: Parametros que se le pasan a la funcion. En la practica, para pasarle muchos parametros a una funcion, es mejor encapsularla en una estructura. Para que esa estructura no se pierda, se debe crearla con memoria dinamica usando `malloc()`
-- uxPriority: Nivel de prioridad siende 0 la prioridad mas baja y 24 la mas alta
+- uxPriority: Nivel de prioridad siendo 0 la prioridad mas baja y 24 la mas alta
 - pxCreatedTask: Puntero al handle de la tarea
 
 ---> **Retorna**
@@ -70,7 +70,7 @@
 
 ---> **Parametros**
 
-- uxQueueLenght: Tamaño de la cola o cantidad de elementos
+- uxQueueLength: Tamaño de la cola o cantidad de elementos
 - uxItemSize: Tamaño, en bytes, de cada elemento o item
 
 ---> **Retorna**
@@ -171,7 +171,7 @@ Las funciones xQueueSendFromISR y xQueueReceiveFromISR tienen un parámetro extr
 ---> **Retorna**
 
 - pdTRUE: Si el semaforo fue liberado
-- pdFalse: Si ocurrio un error
+- pdFALSE: Si ocurrio un error
 
 ---
 
@@ -225,3 +225,89 @@ Las funciones xQueueSendFromISR y xQueueReceiveFromISR tienen un parámetro extr
 | **Contar eventos** | ✅ SÍ | Funciona perfecto como semáforo contador sin gastar RAM |
 
 ---
+
+### Grupos de eventos
+
+#### Libreria: `#include "freertos/event_groups.h"`
+
+#### Manejador del grupo de eventos
+
+`EventGroupHandle_t`
+
+#### Funcion para crear un grupo de eventos
+
+`EventGroupHandle_t xEventGroupCreate(void)`
+
+---> **Retorna**
+
+- El manejador de eventos
+- NULL si hubo memoria insuficiente en el HEAP
+
+---
+
+#### Ejemplo de como definir los bits
+
+El ESP32 es de 32 bits, pero FreeRTOS reserva los 8 bits superiores. Solo puedes usar 24 bits (del 0 al 23).
+
+```.c
+#define WIFI_CONNECTED_BIT   (1 << 0) // 001
+#define MQTT_CONNECTED_BIT   (1 << 1) // 010
+#define BUTTON_PRESSED_BIT   (1 << 2) // 100
+```
+
+---
+
+#### Funcion para setear bits
+
+`EventBits_t xEventGroupSetBits(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToSet)`
+
+---> **Parametros**
+
+- EventGroupHandle_t: El manejador del grupo de eventos en la que los bits se van a setear
+- uxBitsToSet: Mascara de bits indicando los bits a setear
+
+---> **Retorna**
+
+- El valor del grupo de eventos al momento de retornar la llamada
+
+#### Funcion para esperar el grupo
+
+`EventBits_t xEventGroupWaitBits(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToWaitFor, const BaseType_t xClearOnExit, const BaseType_t xWaitForAllBits, TickType_t xTicksToWait)`
+
+---> **Parametros**
+
+- xEventGroup: Manejador del grupo de eventos
+- uxBitsToWaitFor: La mascara de bits con los que estoy esperando
+- xClearOnExit: `pdTRUE` para limpiar (borrar) los bits al salir (útil para sincronizar). `pdFALSE` para dejarlos intactos (útil para leer estados)
+- xWaitForAllBits: `pdTRUE` hace que espere **todos** los bits definidos esten en 1. `pdFALSE` espera a que **cualquiera** que los bits definidos este en 1
+- xTicksToWait: Tiempo maximo de espera
+
+---> **Retorna**
+
+- El valor de los bits del grupo en el momento en que se desbloqueó la tarea (o expiró el tiempo). Sirve para saber qué bit exacto causó el despertar
+
+#### Funcion para limpiar los bits
+
+`EventBits_t xEventGroupClearBits(EventGroupHandle_t xEventGroup, const EventBits_t uxBitsToClear)`
+
+---> **Parametros**
+
+- xEventGroup: Manejador del grupo de eventos
+- uxBitsToClear: Mascara de bits a colocar en 0
+
+---> **Retorna**
+
+- El valor del grupo de eventos antes de que se borraran los bits especificados
+
+---
+
+#### Lógica de Funcionamiento: Productores y Consumidores
+
+Imagina que tienes 3 Tareas (Productores) y 1 Tarea Principal (Consumidor) que no puede arrancar hasta que todo esté listo.
+
+| Quien | Accion | Codigo | Bit en el grupo |
+| ----- | ------ | ------ | --------------- |
+| Tarea Wifi | Conectado | `xEventGroupSetBits(grupo, BIT_0)` | 001 |
+| Tarea server | Encontrado | `xEventGroupSetBits(grupo, BIT_1)` | 010 |
+| Tarea sensor | Calibrado | `xEventGroupSetBits(grupo, BIT_2)` | 100 |
+| Tarea principal | **Duerme** esperando a todos | `xEventGroupWaitBits(grupo, BIT_0 - BIT_1 - BIT_2)` | BIT_1 |
