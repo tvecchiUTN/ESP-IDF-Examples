@@ -37,32 +37,38 @@ En este framework, el control es tuyo. Ten en cuenta estas diferencias vitales:
 
 ---
 
-## 📚 Índice de Contenidos
+## 📚 Índice de Soluciones
 
-La documentación está dividida en tres módulos según tu necesidad:
+### 🟢 [Parte 1: Hardware y Periféricos](./Documentacion/Parte1_Basicos.md)
+*Lo esencial para controlar el mundo físico.*
 
-### 🟢 [Parte 1: Funciones Básicas y Periféricos](./Documentacion/Parte1_Basicos.md)
-*Dominando el Hardware.*
-* **Controlar pines:** [GPIO (Salida/Entrada)](./Parte1_Basicos.md#gpio-general-purpose-input-output)
-* **Leer sensores:** [ADC (Analógico)](./Parte1_Basicos.md#adc-analog-digital-converter)
-* **Mover motores/LEDs:** [PWM](./Parte1_Basicos.md#pwm-pulse-widht-modulation) y [DAC](./Parte1_Basicos.md#dac-digital-to-analog-converter)
-* **Guardar datos (Memoria no volátil):** [NVS](./Parte1_Basicos.md#nvs-non-volatile-storage)
-* **Comunicación Serial:** [UART](./Parte1_Basicos.md#uart-universal-asynchronous-receiver-transmitter)
-* **Ahorro de energía:** [Power Modes](./Parte1_Basicos.md#power-modes) y [Timers](./Parte1_Basicos.md#gptimer-general-purpose-timer)
+| Quiero... | Ir a Sección |
+| :--- | :--- |
+| Configurar pines (Led, Botón) | [GPIO](./Documentacion/Parte1_Basicos.md#gpio-general-purpose-input-output) |
+| Leer voltaje analógico | [ADC](./Documentacion/Parte1_Basicos.md#adc-analog-digital-converter) |
+| Controlar intensidad/Servos | [PWM](./Documentacion/Parte1_Basicos.md#pwm-pulse-widht-modulation) |
+| Guardar datos sin perderlos | [NVS](./Documentacion/Parte1_Basicos.md#nvs-non-volatile-storage) |
+| Comunicar con PC/Sensores | [UART](./Documentacion/Parte1_Basicos.md#uart-universal-asynchronous-receiver-transmitter) |
+| Ahorrar batería | [Power Modes](./Documentacion/Parte1_Basicos.md#power-modes) |
 
 ### 🟡 [Parte 2: Sistema Operativo (FreeRTOS)](./Documentacion/Parte2_FreeRTOS.md)
-*Dominando la Multitarea.*
-* Creación de Tareas (Multithreading).
-* Sincronización (Semáforos, Mutex).
-* Comunicación entre tareas (Colas/Queues).
-* Manejo de eventos.
+*Gestión de tareas y tiempos.*
+
+| Quiero... | Ir a Sección |
+| :--- | :--- |
+| **Ejecutar código en paralelo** | [Creación de Tareas](./Documentacion/Parte2_FreeRTOS.md#creacion-de-tareas-task-create) |
+| **Pasar datos** entre tareas | [Colas (Queues)](./Documentacion/Parte2_FreeRTOS.md#colas-o-queue) |
+| **Proteger** una variable global | [Mutex](./Documentacion/Parte2_FreeRTOS.md#semaforos-y-mutex) |
+| **Sincronizar** (Avisar que algo pasó) | [Semáforos](./Documentacion/Parte2_FreeRTOS.md#semaforos-y-mutex) |
+| **Avisar** desde una interrupción (Rápido) | [Notificaciones Directas](./Documentacion/Parte2_FreeRTOS.md#notificaciones-directas-task-notifications) |
+| Esperar **múltiples** eventos a la vez | [Grupos de Eventos](./Documentacion/Parte2_FreeRTOS.md#grupos-de-eventos) |
 
 ### 🔵 [Parte 3: Conectividad y Protocolos](./Documentacion/Parte3_Conectividad.md)
-*Dominando el IoT.*
-* **WiFi:** Modo Estación (Cliente) y SoftAP (Router).
-* **Internet:** Cliente HTTP.
-* **Buses:** I2C, SPI.
-* **Control:** RMT (Infrarrojos/LEDs Addressable).
+*Conectando al mundo (IoT).*
+* **WiFi Station:** Conectarse a un Router.
+* **WiFi SoftAP:** Crear tu propia red.
+* **Protocolos:** HTTP Client, MQTT.
+* **Hardware:** I2C, SPI.
 
 ---
 
