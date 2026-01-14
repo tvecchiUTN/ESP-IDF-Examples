@@ -127,3 +127,60 @@ Las funciones xQueueSendFromISR y xQueueReceiveFromISR tienen un parámetro extr
 ### Semaforos y MUTEX
 
 #### Libreria: `#include "freertos/semphr.h"`
+
+#### Macro para crear el semaforo binario
+
+`xSemaphoreCreateBinary()`
+
+---> **Retorna**
+
+- Manejador del semaforo binario, debe ser del tipo `SemaphoreHandle_t`, este inicia vacio por lo que le tenemos que dar un primer valor para que arranque disponible
+
+#### Macro para crear el MUTEX
+
+`xSemaphoreCreateMutex()`
+
+---> **Retorna**
+
+- Manejador del mutex, debe ser del tipo `SemaphoreHandle_t`, este inicia disponible
+
+#### Macro para bloquear el semaforo
+
+`xSemaphoreTake(xSemaphore, xBlockTime)`
+
+> El termino bloquear o "Lock" en ingles viene de que en C, el mutex se bloqua y se desbloquea. Capaz con este termino se entiende mejor el uso
+
+---> **Parametros**
+
+- xSemaphore: Manejador del semaforo
+- xBlockTime: Tiempo, en ticks, que debe esperar hasta que el semaforo este disponible
+
+---> **Retorna**
+
+- pdTRUE: Si el semaforo fue obtenido
+- pdFALSE: Si el tiempo expiro sin que el semaforo este disponible
+
+#### Macro para liberar el semaforo
+
+`xSemaphoreGive(xSemaphore)`
+
+---> **Parametros**
+
+- xSemaphore: Manejador del semaforo
+
+---> **Retorna**
+
+- pdTRUE: Si el semaforo fue liberado
+- pdFalse: Si ocurrio un error
+
+---
+
+| Caracteristica | Semaforo binario | Mutex |
+| -------------- | ---------------- | ----- |
+| **Uso Principal** | **Sincronización:** Una tarea (o ISR) avisa a otra que algo pasó. | **Protección (Exclusión Mutua):** Proteger una variable o bus para que solo uno la use a la vez. |
+| **Dueño (Ownership)** | **NO.** Cualquiera puede dar o tomar. | **SÍ.** Solo quien lo toma puede liberarlo. |
+| **Herencia de Prioridad** | **NO.** Sufre de "Inversión de Prioridad". | **SÍ.** Evita bloqueos si tareas de distinta prioridad compiten. |
+| **Uso en ISR** | **Permitido** (`GiveFromISR`). | **PROHIBIDO.** No se puede usar Mutex dentro de una interrupción. |
+
+---
+
