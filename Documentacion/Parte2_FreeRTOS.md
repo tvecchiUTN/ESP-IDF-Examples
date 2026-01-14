@@ -3,7 +3,7 @@
 - [Gestion de tareas](#creacion-de-tareas-task-create)
 - [Colas o Queues (Productor-Consumidor)](#colas-o-queue)
 - [Semaforos y MUTEX](#semaforos-y-mutex)
-- Notificaciones directas (Task notifications)
+- [Notificaciones directas (Task notifications)](#notificaciones-directas-task-notifications)
 - Grupos de eventos
 
 ## Desarrollo de temas
@@ -184,3 +184,21 @@ Las funciones xQueueSendFromISR y xQueueReceiveFromISR tienen un parámetro extr
 
 ---
 
+### Notificaciones directas (Task notifications)
+
+#### Libreria: Misma que semaforo
+
+#### Macro para dar la notificacion
+
+`xTaskNotifyGiveIndexed(xTaskToNotify, uxIndexToNotify)`
+
+---> **Parametros**
+
+- xTaskToNotify: Manejador de la tarea a notificar. Es el mismo del que retorna `xTaskCreate()`
+- uxIndexToNotify: El indice en la que el array de notificacion de la tarea destino se va a enviar
+
+---> **Retorna**
+
+- Siempre retorna pdPASS
+
+> Razón técnica: Esta función simplemente incrementa un contador dentro de la tarea destino. A diferencia de una cola, no puede "llenarse" ni fallar por falta de memoria, así que siempre tiene éxito.
