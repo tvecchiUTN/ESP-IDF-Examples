@@ -190,15 +190,38 @@ Las funciones xQueueSendFromISR y xQueueReceiveFromISR tienen un parámetro extr
 
 #### Macro para dar la notificacion
 
-`xTaskNotifyGiveIndexed(xTaskToNotify, uxIndexToNotify)`
+`xTaskNotifyGive(xTaskToNotify)`
 
 ---> **Parametros**
 
 - xTaskToNotify: Manejador de la tarea a notificar. Es el mismo del que retorna `xTaskCreate()`
-- uxIndexToNotify: El indice en la que el array de notificacion de la tarea destino se va a enviar
 
 ---> **Retorna**
 
 - Siempre retorna pdPASS
 
 > Razón técnica: Esta función simplemente incrementa un contador dentro de la tarea destino. A diferencia de una cola, no puede "llenarse" ni fallar por falta de memoria, así que siempre tiene éxito.
+
+#### Macro para recibir una notificacion
+
+`ulTaskNotifyTake(xClearCountOnExit, xTicksToWait)`
+
+---> **Parametros**
+
+- xClearCountOnExit: Si es pdFALSE entonces el valor de la notificacion es decrementado hasta que la funcion salga. Caso contrario, la notificacion de la tarea se setea a cero cuando la funcion salga
+- xTicksToWait: Tiempo, en ticks, que la tarea debe esperar bloqueado para que el valor de la notificacion sea mayor a cero
+
+---> **Retorna**
+
+- El recuento de notificaciones de la tarea antes de que se borre a cero o se reduzca
+
+---
+
+| Necesidad | ¿Usar Notificación? | ¿Por qué? |
+| --------- | ------------------- | --------- |
+| **Sincronizar ISR con Tarea** | ✅ SÍ | Es la opción más rápida y ligera. Reemplaza al Semáforo Binario |
+| **Pasar datos (char, struct)** | ❌ NO | Usa una Cola. La notificación solo guarda 32 bits |
+| **Sincronizar varias tareas** | ❌ NO | Usa Event Groups o Semáforos. La notificación es privada de una tarea |
+| **Contar eventos** | ✅ SÍ | Funciona perfecto como semáforo contador sin gastar RAM |
+
+---
