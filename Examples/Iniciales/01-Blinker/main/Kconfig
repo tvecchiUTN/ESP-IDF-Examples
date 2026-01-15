@@ -1,0 +1,10 @@
+menu "Blinker Configuration"
+
+    config BLINK_GPIO
+        int "Led GPIO number"
+        default 2
+        help
+            Description: GPIO number where the LED is connected.
+            Recommended: 2 for on-board LED.
+
+endmenu
