@@ -5,7 +5,7 @@ static const char *TAG = "PWM_DRIVER";
 // Global constant definition
 const uint32_t LIMIT_LEDC = (1UL << PWM_DUTY_RES) - 1;
 
-esp_err_t pwm_init(int gpio_num, ledc_channel_t channel)
+esp_err_t pwm_init(int gpio_num, ledc_channel_t channel, bool installFade)
 {
     // 1. Timer Configuration (Shared resource)
     // In a real multi-channel scenario, we might check if timer is already init.
@@ -15,11 +15,11 @@ esp_err_t pwm_init(int gpio_num, ledc_channel_t channel)
         .duty_resolution = PWM_DUTY_RES,
         .freq_hz = PWM_FREQUENCY,
         .speed_mode = PWM_MODE,
-        .timer_num = PWM_TIMER
-    };
-    
+        .timer_num = PWM_TIMER};
+
     esp_err_t err = ledc_timer_config(&cfg_timer);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         ESP_LOGE(TAG, "Timer config failed: %s", esp_err_to_name(err));
         return err;
     }
@@ -34,19 +34,22 @@ esp_err_t pwm_init(int gpio_num, ledc_channel_t channel)
         .intr_type = LEDC_INTR_DISABLE,
         .sleep_mode = LEDC_SLEEP_MODE_NO_ALIVE_NO_PD,
         .speed_mode = PWM_MODE,
-        .timer_sel = PWM_TIMER
-    };
+        .timer_sel = PWM_TIMER};
 
     err = ledc_channel_config(&cfg_channel);
-    if (err != ESP_OK) {
+    if (err != ESP_OK)
+    {
         ESP_LOGE(TAG, "Channel config failed: %s", esp_err_to_name(err));
         return err;
     }
 
     // 3. Install Fade Service (needed for auto fading)
-    // ESP-IDF handles double-installation internally, so this is safe-ish,
-    // but typically done once in system init.
-    ledc_fade_func_install(0); 
+    if (installFade)
+    {
+        // ESP-IDF handles double-installation internally, so this is safe-ish,
+        // but typically done once in system init.
+        ledc_fade_func_install(0);
+    }
 
     ESP_LOGI(TAG, "PWM initialized on GPIO %d, Channel %d", gpio_num, channel);
     return ESP_OK;

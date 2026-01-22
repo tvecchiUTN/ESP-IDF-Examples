@@ -36,13 +36,14 @@ extern const uint32_t LIMIT_LEDC;
  *
  * @param[in] gpio_num The physical GPIO pin number to output PWM.
  * @param[in] channel  The LEDC channel (0-7) to assign to this pin.
+ * @param[in] installFade If true, install the fade function needed for auto fading
  *
  * @return
  * - ESP_OK: Success
  * - ESP_ERR_INVALID_ARG: Parameter error
  * - ESP_FAIL: Driver configuration failed
  */
-esp_err_t pwm_init(int gpio_num, ledc_channel_t channel);
+esp_err_t pwm_init(int gpio_num, ledc_channel_t channel, bool installFade);
 
 /**
  * @brief Performs a manual fading effect using CPU delays.

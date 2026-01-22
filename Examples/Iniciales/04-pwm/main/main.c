@@ -6,7 +6,7 @@
 void app_main(void)
 {
     // Ahora el main tiene el control de la configuración física
-    esp_err_t err = pwm_init(MY_LED_GPIO, MY_PWM_CHANNEL);
+    esp_err_t err = pwm_init(MY_LED_GPIO, MY_PWM_CHANNEL, true);
     
     if (err != ESP_OK) {
         ESP_LOGW("MAIN", "Critical Failure initializing PWM. Halting.");
