@@ -57,3 +57,9 @@ Tu Salida:
 Lista de "Code Smells": Enumera los problemas encontrados.
 
 Refactorización Sugerida: Muestrame solo los bloques de código que cambiarías y explica por qué.
+
+---------------------------------------------------------------------------------------------------------------------
+
+Comando copile.json
+sdkconfig' reconfigure
+Ejecutando tarea: C:\Users\tomas\.espressif\python_env\idf5.5_py3.11_env\Scripts\python.exe C:\Users\tomas\esp\v5.5.1\esp-idf\tools\idf.py -B c:\Users\tomas\GitHub\ESP-IDF-Examples\Examples\Iniciales\06-sesnor_touch\build -DSDKCONFIG='c:\Users\tomas\GitHub\ESP-IDF-Examples\Examples\Iniciales\06-sesnor_touch\sdkconfig' reconfigure
