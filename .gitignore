@@ -50,11 +50,3 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
-promt.txt
-
-Promt/promt.txt
-
-*.txt
-
-*.json
