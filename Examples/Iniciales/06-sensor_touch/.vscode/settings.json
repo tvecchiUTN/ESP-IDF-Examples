@@ -1,13 +1,11 @@
 {
   "C_Cpp.intelliSenseEngine": "default",
-  "idf.espIdfPathWin": "C:\\Users\\tomas\\esp\\v5.5.1\\esp-idf",
-  "idf.pythonInstallPath": "C:\\Users\\tomas\\.espressif\\tools\\idf-python\\3.11.2\\python.exe",
   "idf.openOcdConfigs": [
     "interface/ftdi/esp_ftdi.cfg",
     "target/esp32.cfg"
   ],
   "idf.portWin": "COM3",
-  "idf.toolsPathWin": "C:\\Users\\tomas\\.espressif",
+  "idf.currentSetup": "C:\\Users\\tomas\\esp\\v5.5.1\\esp-idf",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32"
   },
@@ -17,6 +15,5 @@
     "--query-driver=**",
     "--compile-commands-dir=c:\\Users\\tomas\\GitHub\\ESP-IDF-Examples\\Examples\\Iniciales\\06-sensor_touch\\build"
   ],
-  "idf.flashType": "UART",
-  "idf.currentSetup": "C:\\Users\\tomas\\esp\\v5.5.1\\esp-idf"
+  "idf.flashType": "UART"
 }
