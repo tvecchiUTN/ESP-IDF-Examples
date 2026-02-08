@@ -16,20 +16,20 @@ bool function_on_callback(touch_sensor_handle_t sens_handle, const touch_active_
     return true;
 }
 
+touch_sensor_sample_config_t sample_cfg[TOUCH_CFG_NUM] = {TOUCH_SENSOR_V1_DEFAULT_SAMPLE_CONFIG(5.0, TOUCH_VOLT_LIM_L_0V5, TOUCH_VOLT_LIM_H_1V7)};
+
 void app_main(void)
 {
     touch_sensor_handle_t handle_sensor_touch = NULL;
     touch_channel_handle_t channel_handle_sensor_touch = NULL;
 
-    initial_setup_touch_sensor(&handle_sensor_touch);
+    ESP_ERROR_CHECK(initial_setup_touch_sensor(sample_cfg, &handle_sensor_touch));
+    
+    ESP_ERROR_CHECK(setup_channel_sensor(handle_sensor_touch, CHAN_ID, &channel_handle_sensor_touch));
 
-    setup_channel_sensor(handle_sensor_touch, CHAN_ID, &channel_handle_sensor_touch);
+    ESP_ERROR_CHECK(setup_filter_sensor(handle_sensor_touch));
 
-    setup_filter_sensor(handle_sensor_touch);
-
-    uint32_t threshold = 0;
-
-    inital_scan_sensor(handle_sensor_touch, channel_handle_sensor_touch, &threshold);
+    ESP_ERROR_CHECK(initial_scan_sensor(handle_sensor_touch, channel_handle_sensor_touch, NULL));
 
     touch_event_callbacks_t callbacks_touch = {
         .on_active = function_on_callback,
@@ -42,8 +42,6 @@ void app_main(void)
     ESP_ERROR_CHECK(touch_sensor_start_continuous_scanning(handle_sensor_touch));
 
     uint32_t data[TOUCH_CFG_NUM] = {};
-
-    ESP_LOGI(TAG, "El valor del umbral es de %d", threshold);
 
     while(1)
     {
