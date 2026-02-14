@@ -1,0 +1,2 @@
+source C:/Users/tomas/GitHub/ESP-IDF-Examples/Examples/Iniciales/07-UART/build/bootloader/gdbinit/symbols
+source C:/Users/tomas/GitHub/ESP-IDF-Examples/Examples/Iniciales/07-UART/build/bootloader/gdbinit/connect

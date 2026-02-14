@@ -1,0 +1,2 @@
+source C:/Users/tomas/GitHub/ESP-IDF-Examples/Examples/Iniciales/08-NVS/build/bootloader/gdbinit/symbols
+source C:/Users/tomas/GitHub/ESP-IDF-Examples/Examples/Iniciales/08-NVS/build/bootloader/gdbinit/connect
