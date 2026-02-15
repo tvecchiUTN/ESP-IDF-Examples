@@ -45,6 +45,13 @@ void blink_task(void* pvParameters)
     }
 }
 
+/*
+void cpu_kiler(void* args)
+{
+    while(1);
+}
+*/
+
 void app_main(void)
 {
     static blinker_led_t LED1 = {
@@ -60,8 +67,14 @@ void app_main(void)
     TaskHandle_t handle_task_GPIO2;
     TaskHandle_t handle_task_GPIO4;
 
-    xTaskCreatePinnedToCore(blink_task, "Task GPIO2", 1024, (void*)&LED1, 1, &handle_task_GPIO2, 0);
-    xTaskCreatePinnedToCore(blink_task, "Task GPIO4", 1024, (void*)&LED2, 2, &handle_task_GPIO4, 1);
+    static StackType_t stack_task_GPIO2[2048];
+    static StaticTask_t tcb_task_GPIO2;
+
+    handle_task_GPIO2 = xTaskCreateStaticPinnedToCore(blink_task, "Task GPIO2", 2048, (void*)&LED1, 1, stack_task_GPIO2, &tcb_task_GPIO2, 0);
+    xTaskCreatePinnedToCore(blink_task, "Task GPIO4", 2048, (void*)&LED2, 2, &handle_task_GPIO4, 1);
+
+    //Funcion para analizar el uso del watchdog
+    //xTaskCreatePinnedToCore(cpu_kiler, "Task CPU killer", 512, NULL, 5, NULL, 0);
 
     if(handle_task_GPIO2 && handle_task_GPIO4)
     {
