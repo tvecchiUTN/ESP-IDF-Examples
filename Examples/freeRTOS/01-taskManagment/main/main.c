@@ -1,15 +1,19 @@
 #include <stdio.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/event_groups.h"
 #include "esp_err.h"
 #include "esp_log.h"
 
 #include "driver/gpio.h"
 
+#define MAIN_FINISH_BIT 1 << 0
+
 typedef struct
 {
     gpio_num_t gpio_num;
     uint64_t blink_period_ms;
+    EventGroupHandle_t handleGroup;
 }blinker_led_t;
 
 static const char* TAG = "Ejemplo 01-TaskManager";
@@ -33,6 +37,8 @@ void blink_task(void* pvParameters)
     //Lo seteamos a un nivel conocido
     gpio_set_level(blinker_data->gpio_num, 0);
 
+    xEventGroupWaitBits(blinker_data->handleGroup, MAIN_FINISH_BIT, pdFALSE, pdTRUE, portMAX_DELAY);
+
     while(1)
     {
         gpio_set_level(blinker_data->gpio_num, 1);
@@ -54,15 +60,19 @@ void cpu_kiler(void* args)
 
 void app_main(void)
 {
+    EventGroupHandle_t handleGroup_main = xEventGroupCreate();
+
     static blinker_led_t LED1 = {
         .gpio_num = GPIO_NUM_2,
         .blink_period_ms = 500,
     };
+    LED1.handleGroup = handleGroup_main;
 
     static blinker_led_t LED2 = {
         .gpio_num = GPIO_NUM_4,
         .blink_period_ms = 1000,
     };
+    LED2.handleGroup = handleGroup_main;
 
     TaskHandle_t handle_task_GPIO2;
     TaskHandle_t handle_task_GPIO4;
@@ -80,6 +90,8 @@ void app_main(void)
     {
         ESP_LOGI(TAG, "Tareas creadas correctamente");
     }
+
+    xEventGroupSetBits(handleGroup_main, MAIN_FINISH_BIT);
 
     vTaskSuspend(NULL);
 }
