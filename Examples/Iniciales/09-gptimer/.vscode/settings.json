@@ -1,5 +1,5 @@
 {
     "idf.currentSetup": "T:\\Espressif\\.espressif\\v5.5.3\\esp-idf",
     "idf.flashType": "UART",
-    "idf.portWin": "COM1"
+    "idf.portWin": "COM4"
 }
