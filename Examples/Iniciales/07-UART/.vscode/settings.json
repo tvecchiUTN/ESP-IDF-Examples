@@ -5,7 +5,7 @@
     "target/esp32.cfg"
   ],
   "idf.portWin": "COM3",
-  "idf.currentSetup": "C:\\Users\\tomas\\esp\\v5.5.1\\esp-idf",
+  "idf.currentSetup": "T:\\Espressif\\.espressif\\v5.5.3\\esp-idf",
   "idf.customExtraVars": {
     "IDF_TARGET": "esp32"
   },
