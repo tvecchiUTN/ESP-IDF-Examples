@@ -17,5 +17,6 @@
     "--query-driver=**",
     "--compile-commands-dir=c:\\Users\\tomas\\GitHub\\ESP-IDF-Examples\\Examples\\Iniciales\\05-dac\\build"
   ],
-  "idf.flashType": "UART"
+  "idf.flashType": "UART",
+  "idf.currentSetup": "T:\\Espressif\\.espressif\\v5.5.3\\esp-idf"
 }

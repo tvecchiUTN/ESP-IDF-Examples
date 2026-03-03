@@ -8,6 +8,9 @@
 #include "nvs_flash.h"
 #include "nvs.h"
 
+static const char* TAG = "Ejemplo 08-Uso del NVS";
+
+/*
 static void nvs_full_dump(const char* part_name, const char* namespace_name)
 {
     if((strlen(part_name) > 15) || (strlen(namespace_name) > 15))
@@ -29,8 +32,9 @@ static void nvs_full_dump(const char* part_name, const char* namespace_name)
 
     return;
 }
+*/
 
-static const char *TAG = "Ejemplo 08 - NVS";
+//static const char *TAG = "Ejemplo 08 - NVS";
 
 void app_main(void)
 {
@@ -72,9 +76,5 @@ void app_main(void)
 
     ESP_LOGI(TAG, "NVS cerrado correctamente");
 
-    while (1)
-    {
-
-        vTaskDelay(pdMS_TO_TICKS(1000));
-    }
+    vTaskSuspend(NULL);
 }
